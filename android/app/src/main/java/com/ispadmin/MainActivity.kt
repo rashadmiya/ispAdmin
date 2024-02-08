@@ -1,4 +1,4 @@
-package com.ispadmin
+package com.rfoundation.ispadmin
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
