@@ -1,16 +1,38 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { ReactNode, useEffect, useState } from 'react'
 import global_styles from '../utils/global_styles'
 import { ConstantColor } from '../utils/constant_color'
 import HomeAccordion from './common/HomeAccordion'
-import { dailyAccountsOptions } from '../constants/menuItems'
+import { dailyAccountsOptions } from '../constants/menuItems';
+
+interface dailyAccount {
+    name: string,
+    type: string,
+    onPres: () => void,
+    icon: Element,
+    innerContent: any,
+}
 
 const OwnerHome = () => {
+    const [dailyAccountsOpts, setDailyAccountsOpts] = useState(dailyAccountsOptions);
+
+    useEffect(() => {
+        let dAo: any = [];
+        dailyAccountsOptions.map((elem: any) => {
+            // setDailyAccountsOpts((prev) => [...prev, elem]);
+            dAo.push(elem);
+        });
+        setDailyAccountsOpts(dAo);
+    }, [])
+
     return (
         <View style={global_styles.customContainer}>
             <View style={global_styles.sizedBoxTen}></View>
-            <View style={{ ...global_styles.headerWrapper, backgroundColor: "#3DED97", borderRadius: 15 }}>
-                <Text style={{ textAlign: 'center', fontSize: 25, fontWeight: 'bold' }}>Bijoy Admin</Text>
+            <View style={[global_styles.headerWrapper, global_styles.shadow]}>
+                <Text
+                    style={[global_styles.shadawText, global_styles.textBold, global_styles.textLarge, global_styles.textCenter, global_styles.paddingVerticalTen]}
+                >
+                    Bijoy Admin</Text>
             </View>
 
             <View style={global_styles.sizedBoxTen}></View>
@@ -36,7 +58,7 @@ const OwnerHome = () => {
                 <View style={global_styles.sizedBoxTen}></View>
 
 
-                {dailyAccountsOptions.map((val: any, index) => (
+                {dailyAccountsOpts.map((val: any, index) => (
                     <HomeAccordion key={index} value={val} type={val.type} />
                 ))}
             </ScrollView>

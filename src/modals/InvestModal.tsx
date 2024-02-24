@@ -88,6 +88,7 @@ const InvestModal = ({ openedItem, isModalVisible, modalHide }:
     const deployInvest = async () => {
         if (investor?.fullName && investAmount) {
             const createTranssction: InvestInterface = {
+                partner_name: investor.fullName,
                 partner_id: investor.id,
                 type: 'invest',
                 amount: parseInt(investAmount),

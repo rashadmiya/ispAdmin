@@ -13,48 +13,24 @@ import { ExpenditureInterface } from '../interfaces/TransactionInterface';
 import { UserInterface } from '../interfaces/user_interface';
 import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import Icon from '../utils/customIcons';
+import { SelectList } from 'react-native-dropdown-select-list';
+import { useSelector } from 'react-redux';
+
+interface EInterface {
+    name: string;
+}
 
 const ExpenseModal = ({ openedItem, isModalVisible, modalHide }:
     { openedItem: any, isModalVisible: boolean, modalHide: () => void }) => {
-    const [spendthrift, setSpendthrift] = useState<UserInterface | undefined>(undefined);
+        
+    const reduxExpenseConstant = useSelector((state: any) => state.expenseConstant.value);
+    const [expenseTo, setExpenseTo] = useState('');
     const [expenseAmount, setExpenseAmount] = useState('');
-    const [employes, setEmployes] = useState([]);
-    const [filteredEmployes, setFilteredEmployes] = useState([]);
     const [showExpenseDate, setShowExpenseDate] = useState(Platform.OS === 'ios');
     const [date, setDate] = useState(new Date(),);
     const [isDateTaken, setIsDateTaken] = useState(false);
+    const [isNewExpense, setIsNewExpense] = useState(false);
 
-
-    // console.log("date object :", date)
-    // DateTimePickerAndroid.open(params: AndroidNativeProps)
-    // DateTimePickerAndroid.dismiss(mode: AndroidNativeProps['mode']);
-
-    const findingUser = (query: string) => {
-        if (query) {
-            let filteredNames = employes.filter((e: any) => {
-                return Object.values(e).some((value: any) => {
-                    return value.toString().toLowerCase().includes(query);
-                });
-            });
-            setFilteredEmployes(filteredNames);
-        } else {
-            setFilteredEmployes([]);
-        }
-    };
-
-    useEffect(() => {
-        const loadEmployes = async () => {
-            let tempEmployes: any = [];
-            let snapshot = await firestore().collection('employes').get();
-
-            snapshot.docs.forEach((elem) => {
-                tempEmployes.push(elem.data());
-            })
-
-            setEmployes(tempEmployes);
-        }
-        loadEmployes();
-    }, []);
 
     const minimumDateFinder = () => {
         const today = new Date();
@@ -72,9 +48,11 @@ const ExpenseModal = ({ openedItem, isModalVisible, modalHide }:
 
 
     const deployInvest = async () => {
-        if (spendthrift?.fullName && expenseAmount) {
+        if (expenseTo && expenseAmount) {
             const createTranssction: ExpenditureInterface = {
-                partner_id: spendthrift.id,
+                // partner_name: spendthrift.fullName,
+                // partner_id: spendthrift.id,
+                expenseTo: expenseTo,
                 type: 'expense',
                 amount: parseInt(expenseAmount),
                 createdAt: firestore.FieldValue.serverTimestamp(),
@@ -84,7 +62,7 @@ const ExpenseModal = ({ openedItem, isModalVisible, modalHide }:
                 .then(() => {
                     modalHide();
                     setExpenseAmount('');
-                    setSpendthrift(undefined);
+                    setExpenseTo('');
                     ToastAndroid.show('Expense Updated Successfully!', ToastAndroid.SHORT);
                 })
                 .catch((error: any) => console.log(error));
@@ -102,7 +80,11 @@ const ExpenseModal = ({ openedItem, isModalVisible, modalHide }:
             onSwipeComplete={modalHide}
             swipeDirection="up"
             customBackdrop={
-                <TouchableWithoutFeedback onPress={modalHide}>
+                <TouchableWithoutFeedback onPress={() => {
+                    modalHide();
+                    setExpenseTo('');
+                    setExpenseAmount('');
+                }}>
                     <View style={{ flex: 1, backgroundColor: 'black', }} />
                 </TouchableWithoutFeedback>
             }
@@ -141,28 +123,37 @@ const ExpenseModal = ({ openedItem, isModalVisible, modalHide }:
                                 <View style={global_styles.sizedBoxTen}></View>
 
                                 <View style={[styles.autocompleteContainer, { top: 50 }]}>
-                                    <AutocompleteInput
-                                        data={Array.from(filteredEmployes)}
-                                        value={spendthrift?.fullName}
-                                        placeholder={`Name (who's expense)`}
-                                        placeholderTextColor="#000"
-                                        inputContainerStyle={{ paddingHorizontal: 8, }}
-                                        selectionColor={'#000'}
-                                        onChangeText={(text) => findingUser(text)}
-                                        flatListProps={{
-                                            keyExtractor: (item: any) => item.id,
-                                            renderItem: ({ item, index }) => (
-                                                <Pressable key={index}
-                                                    onPress={() => {
-                                                        setSpendthrift(item);
-                                                        setFilteredEmployes([])
-                                                    }}
-                                                >
-                                                    <Text>{item.fullName}</Text>
-                                                </Pressable>
-                                            ),
-                                        }}
-                                    />
+
+                                    {isNewExpense ? (
+                                        <>
+                                            <TextInput
+                                                placeholderTextColor="#000"
+                                                placeholder="Enter Expense Sector"
+                                                onChangeText={(text) => setExpenseTo(text)}
+                                                value={expenseTo}
+                                                autoCapitalize="none"
+                                                style={styles.text_input}
+                                                keyboardType='number-pad'
+                                            /></>
+                                    ) : (
+                                        <>
+                                            <SelectList
+                                                setSelected={(val: string) => {
+                                                    if (val == 'Add New') {
+                                                        setIsNewExpense(true);
+                                                    } else {
+                                                        setExpenseTo(val);
+                                                    }
+                                                }}
+                                                data={reduxExpenseConstant}
+                                                save="value"
+                                                dropdownStyles={{ backgroundColor: '#fff' }}
+                                                placeholder='Expense Sector'
+                                                boxStyles={{ padding: 0, height: 40, margin: 0 }}
+                                                inputStyles={{ height: 30, }}
+                                                dropdownTextStyles={{ color: 'black' }}
+                                            /></>
+                                    )}
                                 </View>
 
                             </View>

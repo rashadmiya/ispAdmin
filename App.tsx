@@ -3,13 +3,13 @@ import React from 'react'
 import ListItem from './src/screens/ListItem'
 import Stack_Navigator from './src/screen_navigator/Stack_Navigator'
 import DrawerNavigator from './src/screen_navigator/Drawer_navigator'
-
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 const App = () => {
   return (
-    <SafeAreaView style={{flex:1,}}>
+    <SafeAreaProvider style={{flex:1,}}>
       <StatusBar barStyle={"dark-content"} backgroundColor={"#fff"} translucent />
       <DrawerNavigator/>
-    </SafeAreaView>
+    </SafeAreaProvider>
   )
 }
 

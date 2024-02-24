@@ -11,7 +11,7 @@ import Animated, {
     withTiming,
 } from 'react-native-reanimated';
 import Chevron from '../drawer/Chevron';
-import NestedAccordion from '../drawer/Accordion_nested';
+import NestedHomeAccordion from './NestedHomeAccordion';
 
 type Props = {
     value: any;
@@ -61,7 +61,7 @@ const HomeAccordion = ({ value, type }: Props) => {
                         <>
                             {value.innerContent.map((val: any, ind: number) => {
                                 return (
-                                    <NestedAccordion
+                                    <NestedHomeAccordion
                                         value={val}
                                         key={ind}
                                         parentHeighValue={heightValue}

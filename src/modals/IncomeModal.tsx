@@ -1,61 +1,38 @@
-import React, { FC, useEffect, useState } from 'react';
-import {
-    Alert, Dimensions, Pressable, TextInput, ToastAndroid, TouchableOpacity,
-    TouchableWithoutFeedback, Platform
-} from 'react-native';
-import { StyleSheet, Text, View } from 'react-native';
-import Modal from 'react-native-modal';
-import global_styles from '../utils/global_styles';
-import { ConstantColor } from '../utils/constant_color';
-import AutoComplete from '../components/common/AutoComplete';
-import AutocompleteInput from 'react-native-autocomplete-input';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import firestore from '@react-native-firebase/firestore';
+import React, { useState } from 'react';
+import {
+    Alert, Dimensions,
+    Platform,
+    StyleSheet, Text,
+    TextInput, ToastAndroid, TouchableOpacity,
+    TouchableWithoutFeedback,
+    View
+} from 'react-native';
+import { SelectList } from 'react-native-dropdown-select-list';
+import Modal from 'react-native-modal';
+import { useSelector } from 'react-redux';
 import { IncomeInterface } from '../interfaces/TransactionInterface';
-import { UserInterface } from '../interfaces/user_interface';
-import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+import { ConstantColor } from '../utils/constant_color';
 import Icon from '../utils/customIcons';
+import global_styles from '../utils/global_styles';
+
+interface IInterface {
+    name: string;
+}
 
 const IncomeModal = ({ openedItem, isModalVisible, modalHide }:
     { openedItem: any, isModalVisible: boolean, modalHide: () => void }) => {
-    const [earner, setEarner] = useState<UserInterface | undefined>(undefined);
+
+    const reduxLossConstant = useSelector((state: any) => state.lossConstant.value);
+    const [earner, setEarner] = useState<IInterface | undefined>(undefined);
+    const [incomeSector, setIncomeSector] = useState('');
     const [earnAmount, setEarnAmount] = useState('');
-    const [employes, setEmployes] = useState([]);
-    const [filteredEmployes, setFilteredEmployes] = useState([]);
     const [showEarnDate, setShowEarnDate] = useState(Platform.OS === 'ios');
     const [date, setDate] = useState(new Date(),);
     const [isDateTaken, setIsDateTaken] = useState(false);
+    const [isNewIncome, setIsNewIncome] = useState(false)
 
-
-    // console.log("date object :", date)
-    // DateTimePickerAndroid.open(params: AndroidNativeProps)
-    // DateTimePickerAndroid.dismiss(mode: AndroidNativeProps['mode']);
-
-    const findingUser = (query: string) => {
-        if (query) {
-            let filteredNames = employes.filter((e: any) => {
-                return Object.values(e).some((value: any) => {
-                    return value.toString().toLowerCase().includes(query);
-                });
-            });
-            setFilteredEmployes(filteredNames);
-        } else {
-            setFilteredEmployes([]);
-        }
-    };
-
-    useEffect(() => {
-        const loadEmployes = async () => {
-            let tempEmployes: any = [];
-            let snapshot = await firestore().collection('employes').get();
-
-            snapshot.docs.forEach((elem) => {
-                tempEmployes.push(elem.data());
-            })
-
-            setEmployes(tempEmployes);
-        }
-        loadEmployes();
-    }, []);
 
     const minimumDateFinder = () => {
         const today = new Date();
@@ -72,10 +49,10 @@ const IncomeModal = ({ openedItem, isModalVisible, modalHide }:
 
 
 
-    const deployInvest = async () => {
-        if (earner?.fullName && earnAmount) {
+    const deployIncome = async () => {
+        if (incomeSector && earnAmount) {
             const createTranssction: IncomeInterface = {
-                partner_id: earner.id,
+                incomeFrom: incomeSector,
                 type: 'income',
                 amount: parseInt(earnAmount),
                 createdAt: firestore.FieldValue.serverTimestamp(),
@@ -85,7 +62,7 @@ const IncomeModal = ({ openedItem, isModalVisible, modalHide }:
                 .then(() => {
                     modalHide();
                     setEarnAmount('');
-                    setEarner(undefined);
+                    setIncomeSector('');
                     ToastAndroid.show('Income Updated Successfully!', ToastAndroid.SHORT);
                 })
                 .catch((error: any) => console.log(error));
@@ -103,7 +80,11 @@ const IncomeModal = ({ openedItem, isModalVisible, modalHide }:
             onSwipeComplete={modalHide}
             swipeDirection="up"
             customBackdrop={
-                <TouchableWithoutFeedback onPress={modalHide}>
+                <TouchableWithoutFeedback onPress={() => {
+                    modalHide();
+                    setIncomeSector('');
+                    setEarnAmount('')
+                }}>
                     <View style={{ flex: 1, backgroundColor: 'black', }} />
                 </TouchableWithoutFeedback>
             }
@@ -142,30 +123,38 @@ const IncomeModal = ({ openedItem, isModalVisible, modalHide }:
                                 <View style={global_styles.sizedBoxTen}></View>
 
                                 <View style={[styles.autocompleteContainer, { top: 50 }]}>
-                                    <AutocompleteInput
-                                        data={Array.from(filteredEmployes)}
-                                        value={earner?.fullName}
-                                        placeholder='Earner name'
-                                        placeholderTextColor="#000"
-                                        inputContainerStyle={{ paddingHorizontal: 8, }}
-                                        selectionColor={'#000'}
-                                        onChangeText={(text) => findingUser(text)}
-                                        flatListProps={{
-                                            keyExtractor: (item: any) => item.id,
-                                            renderItem: ({ item, index }) => (
-                                                <Pressable key={index}
-                                                    onPress={() => {
-                                                        setEarner(item);
-                                                        setFilteredEmployes([])
-                                                    }}
-                                                >
-                                                    <Text>{item.fullName}</Text>
-                                                </Pressable>
-                                            ),
-                                        }}
-                                    />
-                                </View>
 
+                                    {isNewIncome ? (
+                                        <>
+                                            <TextInput
+                                                placeholderTextColor="#000"
+                                                placeholder="Enter Income Sector"
+                                                onChangeText={(text) => setIncomeSector(text)}
+                                                value={incomeSector}
+                                                autoCapitalize="none"
+                                                style={styles.text_input}
+                                                keyboardType='number-pad'
+                                            /></>
+                                    ) : (
+                                        <>
+                                            <SelectList
+                                                setSelected={(val: string) => {
+                                                    if (val == 'Add New') {
+                                                        setIsNewIncome(true);
+                                                    } else {
+                                                        setIncomeSector(val);
+                                                    }
+                                                }}
+                                                data={reduxLossConstant}
+                                                save="value"
+                                                dropdownStyles={{ backgroundColor: '#fff' }}
+                                                placeholder='Income Sector'
+                                                boxStyles={{padding:0, height:40, margin:0,}}
+                                                inputStyles={{height:30, color:'black'}}
+                                                dropdownTextStyles={{color:'black'}}
+                                            /></>
+                                    )}
+                                </View>
                             </View>
 
                             <View style={{ width: '40%', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
@@ -245,7 +234,7 @@ const IncomeModal = ({ openedItem, isModalVisible, modalHide }:
                     <View style={{ flexDirection: 'row', justifyContent: 'flex-start', marginTop: 'auto' }}>
                         <TouchableOpacity
                             style={[global_styles.borderBox, { backgroundColor: ConstantColor.secondary, }]}
-                            onPress={() => deployInvest()}
+                            onPress={() => deployIncome()}
                         >
                             <Text style={[global_styles.modalHeader,]}>Submit</Text>
                         </TouchableOpacity>

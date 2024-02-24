@@ -8,7 +8,6 @@ import db from '../constants/database';
 import monthNameGenerator from '../helper-function/monthNameGenerator';
 import firestore from '@react-native-firebase/firestore';
 import Loader from '../utils/Loder';
-
 // Define the type of the monthlyTotals object
 interface MonthlyTotals {
     [key: string]: {
@@ -44,45 +43,26 @@ const PartnersHome = ({ user }: { user: UserInterface }) => {
     const [activeMonth, setActiveMonth] = useState(0);
     const flatListRef = useRef<FlatList>(null);
 
+
+    // useEffect(()=>{
+    //     if (monthlyTotals) {
+    //         scrollToIndex(activeMonth)
+    //     }
+    // },[monthlyTotals]);
+
+
     useEffect(() => {
-        createLastTwelveMonth();
-        if (monthlyTotals) {
-            scrollToIndex(activeMonth)
-        }
-    }, []);
-
-    const scrollToIndex = (index: number) => {
-        const wait = new Promise(resolve => setTimeout(resolve, 500));
-        wait.then(() => {
-            if (flatListRef.current && monthlyTotals.length > index) {
-                flatListRef.current.scrollToIndex({ animated: true, index });
-            }
-        });
-
-    };
-    const onScrollToIndexFailed = (info: any) => {
-        console.log("scroll faild:", info)
-        const wait = new Promise(resolve => setTimeout(resolve, 500));
-        wait.then(() => {
-            flatListRef.current?.scrollToIndex({ index: info.index, animated: true });
-        });
-    }
-
-    const createLastTwelveMonth = async () => {
-        setIsLoading(true)
-        const transactionsRef = await firestore().collection('transactions');
+        // createLastTwelveMonth();
         const currentDate = new Date();
         const twelveMonthsAgo = new Date();
         twelveMonthsAgo.setMonth(currentDate.getMonth() - 12);
 
-        const lastTwelveMonthsQuery = transactionsRef.where('createdAt', '>=', twelveMonthsAgo).where('createdAt', '<=', currentDate);
-
-        await lastTwelveMonthsQuery.get().then((querySnapshot: any) => {
+        const query = firestore().collection('transactions').where('createdAt', '>=', twelveMonthsAgo).where('createdAt', '<=', currentDate);
+        const unsubscribe = query.onSnapshot((snapshot) => {
             const updatedMonthlyTotals: MonthlyTotal[] = [];
-
-            querySnapshot.forEach((doc: any) => {
+            snapshot.forEach((doc: any) => {
                 const transactionData = doc.data();
-
+                // console.log("load data :", doc.data());
                 if (!transactionData) return;
 
                 const transactionDate = transactionData.createdAt.toDate();
@@ -135,6 +115,101 @@ const PartnersHome = ({ user }: { user: UserInterface }) => {
 
                 if (updatedMonthlyTotals.length > 1) setActiveMonth(updatedMonthlyTotals.length - 1);
             }
+          });
+      
+          // Unsubscribe from snapshot listener when component unmounts
+          return () => unsubscribe();
+
+    }, []);
+
+    const scrollToIndex = (index: number) => {
+        const wait = new Promise(resolve => setTimeout(resolve, 500));
+        wait.then(() => {
+            if (flatListRef.current && monthlyTotals.length > index) {
+                flatListRef.current.scrollToIndex({ animated: true, index });
+            }
+        });
+
+    };
+    const onScrollToIndexFailed = (info: any) => {
+        console.log("scroll faild:", info)
+        const wait = new Promise(resolve => setTimeout(resolve, 500));
+        wait.then(() => {
+            flatListRef.current?.scrollToIndex({ index: info.index, animated: true });
+        });
+    }
+
+    const createLastTwelveMonth = async () => {
+        setIsLoading(true)
+        const transactionsRef = await firestore().collection('transactions');
+        const currentDate = new Date();
+        const twelveMonthsAgo = new Date();
+        twelveMonthsAgo.setMonth(currentDate.getMonth() - 12);
+
+        // const lastTwelveMonthsQuery = transactionsRef.where('partner_id', '==',user.id).where('createdAt', '>=', twelveMonthsAgo).where('createdAt', '<=', currentDate);
+        const lastTwelveMonthsQuery = transactionsRef.where('createdAt', '>=', twelveMonthsAgo).where('createdAt', '<=', currentDate);
+
+        await lastTwelveMonthsQuery.get().then((querySnapshot: any) => {
+            const updatedMonthlyTotals: MonthlyTotal[] = [];
+            let length = querySnapshot.size
+            // setActiveMonth(length - 1);
+            querySnapshot.forEach((doc: any) => {
+                const transactionData = doc.data();
+                // console.log("load data :", doc.data())
+                if (!transactionData) return;
+
+                const transactionDate = transactionData.createdAt.toDate();
+                const month = transactionDate.getMonth() + 1;
+                const year = transactionDate.getFullYear();
+                const monthYearKey = `${month < 10 ? '0' : ''}${month}-${year}`;
+
+                const existingIndex = updatedMonthlyTotals.findIndex((total) => total.month === monthYearKey);
+                if (existingIndex === -1) {
+                    updatedMonthlyTotals.push({
+                        month: monthYearKey,
+                        data: {
+                            invest: 0,
+                            income: 0,
+                            expense: 0,
+                            loan_to: 0,
+                            borrow: 0,
+                            loss: 0,
+                        },
+                    });
+                }
+
+                const monthlyTotalIndex = updatedMonthlyTotals.findIndex((total) => total.month === monthYearKey);
+                switch (transactionData.type) {
+                    case "invest":
+                        updatedMonthlyTotals[monthlyTotalIndex].data.invest += transactionData.amount;
+                        break;
+                    case "income":
+                        updatedMonthlyTotals[monthlyTotalIndex].data.income += transactionData.amount;
+                        break;
+                    case "expense":
+                        updatedMonthlyTotals[monthlyTotalIndex].data.expense += transactionData.amount;
+                        break;
+                    case "borrow":
+                        updatedMonthlyTotals[monthlyTotalIndex].data.borrow += transactionData.amount;
+                        break;
+                    case "loan_to":
+                        updatedMonthlyTotals[monthlyTotalIndex].data.loan_to += transactionData.amount;
+                        break;
+                    case "loss":
+                        updatedMonthlyTotals[monthlyTotalIndex].data.loss += transactionData.amount;
+                        break;
+                    // Add more cases as needed
+                }
+                setIsLoading(false)
+            });
+
+            if (!isLoading) {
+                setMonthlyTotals(updatedMonthlyTotals);
+
+                if (updatedMonthlyTotals.length > 1) setActiveMonth(updatedMonthlyTotals.length - 1);
+            }
+        }).catch((err: any) => {
+            console.log("user transaction load error :", err.message)
         });
     };
 
@@ -204,7 +279,7 @@ const PartnersHome = ({ user }: { user: UserInterface }) => {
                     indicatorStyle='black'
                 >
 
-                    <View style={[global_styles.paddingVerticalTen, global_styles.justifyBetweenCenter]}>
+                    <View style={[global_styles.paddingVerticalTen,]}>
                         {
                             monthlyTotals[activeMonth]?.month ?
                                 <Text style={[global_styles.shadawText, global_styles.textCenter, global_styles.textBold]}>{monthNameGenerator(monthlyTotals[activeMonth].month)} Account Details :</Text>

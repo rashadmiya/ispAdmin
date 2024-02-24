@@ -14,48 +14,21 @@ import { LossInterface } from '../interfaces/TransactionInterface';
 import { UserInterface } from '../interfaces/user_interface';
 import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import Icon from '../utils/customIcons';
+import { SelectList } from 'react-native-dropdown-select-list';
+import { useSelector } from 'react-redux';
 
 const LossModal = ({ openedItem, isModalVisible, modalHide }:
     { openedItem: any, isModalVisible: boolean, modalHide: () => void }) => {
+    const reduxLossConstant = useSelector((state: any) => state.lossConstant.value);
+
     const [losser, setLosser] = useState<UserInterface | undefined>(undefined);
     const [lossAmount, setLossAmount] = useState('');
-    const [employes, setEmployes] = useState([]);
-    const [filteredEmployes, setFilteredEmployes] = useState([]);
+    const [lossBy, setLossBy] = useState('');
     const [showLossDate, setShowLossDate] = useState(Platform.OS === 'ios');
     const [date, setDate] = useState(new Date(),);
     const [isDateTaken, setIsDateTaken] = useState(false);
+    const [isNewLoss, setIsNewLoss] = useState(false);
 
-
-    // console.log("date object :", date)
-    // DateTimePickerAndroid.open(params: AndroidNativeProps)
-    // DateTimePickerAndroid.dismiss(mode: AndroidNativeProps['mode']);
-
-    const findingUser = (query: string) => {
-        if (query) {
-            let filteredNames = employes.filter((e: any) => {
-                return Object.values(e).some((value: any) => {
-                    return value.toString().toLowerCase().includes(query);
-                });
-            });
-            setFilteredEmployes(filteredNames);
-        } else {
-            setFilteredEmployes([]);
-        }
-    };
-
-    useEffect(() => {
-        const loadEmployes = async () => {
-            let tempEmployes: any = [];
-            let snapshot = await firestore().collection('employes').get();
-
-            snapshot.docs.forEach((elem) => {
-                tempEmployes.push(elem.data());
-            })
-
-            setEmployes(tempEmployes);
-        }
-        loadEmployes();
-    }, []);
 
     const minimumDateFinder = () => {
         const today = new Date();
@@ -75,7 +48,9 @@ const LossModal = ({ openedItem, isModalVisible, modalHide }:
     const deployInvest = async () => {
         if (losser?.fullName && lossAmount) {
             const createTranssction: LossInterface = {
-                partner_id: losser.id,
+                // partner_name: losser.fullName,
+                // partner_id: losser.id,
+                lossReason:lossBy,
                 type: 'loss',
                 amount: parseInt(lossAmount),
                 createdAt: firestore.FieldValue.serverTimestamp(),
@@ -95,7 +70,6 @@ const LossModal = ({ openedItem, isModalVisible, modalHide }:
         }
         return Alert.alert('Alert', 'Please Enter valid name and amount')
     }
-
 
     return (
         // <View style={{ flex: 1 }}>
@@ -122,7 +96,7 @@ const LossModal = ({ openedItem, isModalVisible, modalHide }:
                 <View style={{ backgroundColor: ConstantColor.white, flex: 1, }}>
 
                     <View style={{ ...global_styles.paddingVerticalTen, paddingHorizontal: 10, paddingVertical: 20 }}>
-                    <View>
+                        <View>
                             <Text style={[global_styles.modalHeader,]}>Enter Info About Loss</Text>
                         </View>
                         <Text></Text>
@@ -142,28 +116,37 @@ const LossModal = ({ openedItem, isModalVisible, modalHide }:
                                 <View style={global_styles.sizedBoxTen}></View>
 
                                 <View style={[styles.autocompleteContainer, { top: 50 }]}>
-                                    <AutocompleteInput
-                                        data={Array.from(filteredEmployes)}
-                                        value={losser?.fullName}
-                                        placeholder='Name (who loss)'
-                                        placeholderTextColor="#000"
-                                        inputContainerStyle={{ paddingHorizontal: 8, }}
-                                        selectionColor={'#000'}
-                                        onChangeText={(text) => findingUser(text)}
-                                        flatListProps={{
-                                            keyExtractor: (item: any) => item.id,
-                                            renderItem: ({ item, index }) => (
-                                                <Pressable key={index}
-                                                    onPress={() => {
-                                                        setLosser(item);
-                                                        setFilteredEmployes([])
-                                                    }}
-                                                >
-                                                    <Text>{item.fullName}</Text>
-                                                </Pressable>
-                                            ),
-                                        }}
-                                    />
+
+                                    {isNewLoss ? (
+                                        <>
+                                            <TextInput
+                                                placeholderTextColor="#000"
+                                                placeholder="Enter Loss Reason"
+                                                onChangeText={(text) => setLossBy(text)}
+                                                value={lossBy}
+                                                autoCapitalize="none"
+                                                style={styles.text_input}
+                                                keyboardType='number-pad'
+                                            /></>
+                                    ) : (
+                                        <>
+                                            <SelectList
+                                                setSelected={(val: string) => {
+                                                    if (val == 'Add New') {
+                                                        setIsNewLoss(true);
+                                                    } else {
+                                                        setLossBy(val);
+                                                    }
+                                                }}
+                                                data={reduxLossConstant}
+                                                save="value"
+                                                dropdownStyles={{ backgroundColor: '#fff' }}
+                                                placeholder='Loss Sector'
+                                                boxStyles={{padding:0, height:40, margin:0}}
+                                                inputStyles={{height:30,}}
+                                                dropdownTextStyles={{color:'black'}}
+                                            /></>
+                                    )}
                                 </View>
 
                             </View>

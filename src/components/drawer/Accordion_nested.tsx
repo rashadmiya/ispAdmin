@@ -13,8 +13,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import Chevron from './Chevron';
 import { NestedItem } from '../../constants/menuItems';
-import CustomModal from '../common/CustomModal';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
+import { BORROWERS, EXPENSES, FUNDTRANSFER, INCOME, INVESTMENTS, LOANTO, LOSSES } from '../../utils/constant_route';
 
 type Props = {
     value: NestedItem;
@@ -25,7 +25,7 @@ const NestedAccordion = ({ value, parentHeighValue }: Props) => {
     const [openedItem, setOpenedItem] = useState<string | null>(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
 
-    const navigation = useNavigation();
+    const navigation: any = useNavigation();
 
     const listRef = useAnimatedRef();
     const heightValue = useSharedValue(0);
@@ -49,9 +49,32 @@ const NestedAccordion = ({ value, parentHeighValue }: Props) => {
             <View style={styles.container}>
                 <Pressable
                     onPress={() => {
-                        navigation.dispatch(DrawerActions.closeDrawer())
-                        setOpenedItem(value.name);
-                        setIsModalVisible(true);
+                        switch (value?.name) {
+                            case 'Investments':
+                                return navigation.navigate(INVESTMENTS);
+                                break;
+                            case 'Income':
+                                return navigation.navigate(INCOME);
+                                break;
+                            case 'Borrows':
+                                return navigation.navigate(BORROWERS);
+                                break;
+                            case 'Expenses':
+                                return navigation.navigate(EXPENSES);
+                                break;
+                            case 'Losses':
+                                return navigation.navigate(LOSSES);
+                                break;
+                            case 'Found Transfer':
+                                return navigation.navigate(FUNDTRANSFER);
+                                break;
+                            case 'Loan To':
+                                return navigation.navigate(LOANTO);
+                                break;
+                            default:
+                                break;
+                        }
+
                     }}
                     style={styles.titleContainer}>
                     {openedItem ?
@@ -64,7 +87,6 @@ const NestedAccordion = ({ value, parentHeighValue }: Props) => {
                 </Pressable>
 
             </View>
-            {openedItem && (<CustomModal openedItem={openedItem} isModalVisible={isModalVisible} modalHide={modalHide} />)}
         </>
     );
 };

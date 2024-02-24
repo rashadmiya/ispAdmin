@@ -113,7 +113,16 @@ const global_styles = StyleSheet.create({
     },
     sizedBoxTen:{
         height:10,
-    }
+    },
+    text_input: {
+        paddingVertical: 5,
+        paddingHorizontal: 8,
+        fontSize: 14,
+        color: '#000',
+        width: '100%',
+        borderWidth: 1,
+        borderColor: '#dbdbdb'
+    },
 });
 
 export default global_styles;

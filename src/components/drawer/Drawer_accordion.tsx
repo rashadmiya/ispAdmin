@@ -89,8 +89,8 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: '#E3EDFB',
         // marginHorizontal: 10,
-        marginVertical: 5,
-        borderRadius: 14,
+        marginVertical: 2,
+        // borderRadius: 14,
         borderWidth: .5,
         borderColor: '#0F56B3',
         overflow: 'hidden',
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
         fontWeight:'bold'
     },
     titleContainer: {
-        padding: 7,
+        padding: 5,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',

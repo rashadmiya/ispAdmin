@@ -8,7 +8,7 @@ import { menuItems } from '../constants/menuItems';
 import Accordion from '../components/drawer/Drawer_accordion';
 import { useDispatch, useSelector } from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
-import { USERMANAGER } from '../utils/constant_route';
+import { BORROWERS, USERMANAGER } from '../utils/constant_route';
 import { removeUser } from '../redux/slices/login_user';
 const DrawerMenu = (props: any) => {
   const reduxUser = useSelector((state: any) => state.loggedInUser.value);
@@ -40,7 +40,9 @@ const DrawerMenu = (props: any) => {
 
           <TouchableOpacity
             onPress={() => props.navigation.navigate(USERMANAGER)}
-            style={{ position: 'absolute', top: 5, right: 5, backgroundColor: 'blue', opacity: 0.7, borderRadius: 100 }}>
+            // onPress={() => props.navigation.navigate(BORROWERS)}
+
+            style={{ position: 'absolute', top: 5, right: 5, backgroundColor: ConstantColor.febGreen, opacity: 0.7, borderRadius: 100 }}>
             <Text style={{ color: 'white', fontWeight: '800', fontSize: 16, paddingVertical: 4, paddingHorizontal: 10 }}>
               Manage Users
             </Text>
@@ -62,7 +64,8 @@ const DrawerMenu = (props: any) => {
       </View>
 
 
-      <ScrollView contentContainerStyle={{ margin: 0, padding: 10 }}>
+      <ScrollView contentContainerStyle={{ margin: 10,}}>
+        <View style={global_styles.sizedBoxTen} ></View>
         {drawerItems.map((val: any, index) => (
           // <TouchableOpacity
           //   onPress={onPress}
@@ -73,9 +76,8 @@ const DrawerMenu = (props: any) => {
           // </TouchableOpacity>
           <Accordion key={index} value={val} type={val.type} />
         ))}
-
-
       </ScrollView>
+
       <TouchableOpacity
         onPress={() => {
           Alert.alert('Alert', 'This action will sign you out, make sure by pressing confirm',
@@ -86,7 +88,7 @@ const DrawerMenu = (props: any) => {
               }
             }])
         }}
-        style={[styles.drawerItem, { marginTop: 'auto', alignSelf: 'center', marginBottom: 20 }]}>
+        style={[styles.drawerItem, { marginTop: 'auto', alignSelf: 'center', marginBottom: 20, backgroundColor:ConstantColor.febGreen }]}>
         <Icon type="ant" style={{ color: 'gray' }} name="logout" size={20} />
         <Text style={[styles.drawerItemName, global_styles.shadawText]}>Logout</Text>
       </TouchableOpacity>

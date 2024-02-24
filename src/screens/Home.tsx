@@ -12,14 +12,13 @@ import { useDispatch } from 'react-redux'
 import OwnerHome from '../components/OwnerHome'
 import { UserInterface } from '../interfaces/user_interface'
 import PartnersHome from '../components/PartnersHome'
+import { addLossConstant } from '../redux/slices/loss_constant'
+import { addExpenseConstant } from '../redux/slices/expense_constant'
 
-type uin = {
-    id: string
-}
 
 const Home = () => {
   const dispatch = useDispatch();
-  const [user, setUser] = useState<UserInterface | undefined>(undefined)
+  const [user, setUser] = useState<UserInterface>()
 
     useEffect(() => {
         const loadDrawerContent = async () => {
@@ -33,13 +32,46 @@ const Home = () => {
             console.log('called load user firebase function')
         }
         loadDrawerContent();
+        loadExpenseConstant();
+        loadLossConstant();
 
-    }, [])
+    }, []);
+
+    const loadExpenseConstant = async () => {
+        let tempExpenseConstant: any = [];
+            let snapshot = await firestore().collection('expense_constant').get();
+
+            snapshot.docs.forEach((elem) => {
+                tempExpenseConstant = elem.data().items;
+            })
+
+            // setEmployes(tempEmployes);
+        if (tempExpenseConstant) {
+            dispatch(addExpenseConstant(tempExpenseConstant));
+        }
+        console.log('called loadExpenseConstant firebase function')
+    }
+
+    const loadLossConstant = async () => {
+        let tempLossConstant: any = [];
+            let snapshot = await firestore().collection('loss_constant').get();
+
+            snapshot.docs.forEach((elem) => {
+                tempLossConstant = elem.data().items;
+            })
+
+            // setEmployes(tempEmployes);
+        if (tempLossConstant) {
+            dispatch(addLossConstant(tempLossConstant));
+        }
+        console.log('called loadLossConstant firebase function')
+    }
+    
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: ConstantColor.white }}>
-            {/* {user && user.role == 'admin' && (<OwnerHome/>)} */}
+            {user && user.role == 'admin' && (<OwnerHome/>)}
             {/* {user && user.role == 'partner' && (<PartnersHome user={user}/>)} */}
-            {user && user.role == 'admin' && (<PartnersHome user={user}/>)}
+            {/* {user && user.role == 'admin' && (<PartnersHome user={user}/>)} */}
             
         </SafeAreaView>
     )

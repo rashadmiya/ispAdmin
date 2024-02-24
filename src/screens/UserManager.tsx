@@ -7,6 +7,7 @@ import { SelectList } from 'react-native-dropdown-select-list'
 import Modal from 'react-native-modal';
 import { UserInterface } from '../interfaces/user_interface';
 import Loader from '../utils/Loder';
+import ItemContainerComp from '../components/ItemContainerComp';
 const data = [
     { key: '1', value: 'Partner' },
     { key: '2', value: 'employee' },
@@ -77,23 +78,26 @@ const UserManager = () => {
                 >
                     {
                         employes.map((employee: any, index) => (
-                            <View key={index} style={global_styles.borderBox}>
-                                <View style={global_styles.justifyBetweenCenter}>
-                                    <Text style={[global_styles.textMedium, global_styles.textBold, { width: '80%' }]}>Name: {employee.fullName}</Text>
-                                    <Text style={[global_styles.textMedium, global_styles.textBold, { width: '80%' }]}>Role: {employee.role}</Text>
-                                </View>
+                            // <View key={index} style={global_styles.borderBox}>
+                            //     <View style={global_styles.justifyBetweenCenter}>
+                            //         <Text style={[global_styles.textMedium, global_styles.textBold, { width: '80%' }]}>Name: {employee.fullName}</Text>
+                            //         <Text style={[global_styles.textMedium, global_styles.textBold, { width: '80%' }]}>Role: {employee.role}</Text>
+                            //     </View>
 
-                                <Text style={[global_styles.textMedium, global_styles.textBold, { width: '80%' }]}>Invest: {employee.invest ? employee.invest : 0}৳</Text>
+                            //     <Text style={[global_styles.textMedium, global_styles.textBold, { width: '80%' }]}>Invest: {employee.invest ? employee.invest : 0}৳</Text>
 
-                                <View style={{ flexDirection: 'row', justifyContent: 'flex-start', paddingVertical: 5 }}>
-                                    <TouchableOpacity
-                                        onPress={() => setIsmodalVisible(employee)}
-                                        style={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey' }}>
-                                        <Text style={{ color: 'black', fontWeight: '800', fontSize: 14, paddingVertical: 2, paddingHorizontal: 5 }}>
-                                            Manage User
-                                        </Text>
-                                    </TouchableOpacity>
-                                </View>
+                            //     <View style={{ flexDirection: 'row', justifyContent: 'flex-start', paddingVertical: 5 }}>
+                            //         <TouchableOpacity
+                            //             onPress={() => setIsmodalVisible(employee)}
+                            //             style={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey' }}>
+                            //             <Text style={{ color: 'black', fontWeight: '800', fontSize: 14, paddingVertical: 2, paddingHorizontal: 5 }}>
+                            //                 Manage User
+                            //             </Text>
+                            //         </TouchableOpacity>
+                            //     </View>
+                            // </View>
+                            <View key={index}>
+                                <ItemContainerComp setIsmodalVisible={setIsmodalVisible} employee={employee} />
                             </View>
                         ))
                     }

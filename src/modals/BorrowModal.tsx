@@ -14,8 +14,7 @@ import { UserInterface } from '../interfaces/user_interface';
 import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import Icon from '../utils/customIcons';
 
-const BorrowModal = ({ openedItem, isModalVisible, modalHide }:
-    { openedItem: any, isModalVisible: boolean, modalHide: () => void }) => {
+const BorrowModal = ({ isModalVisible, modalHide }: { isModalVisible: boolean, modalHide: () => void }) => {
     const [selectInvestOption, setSelectInvestOption] = useState(1);
     const [lender, setLender] = useState<UserInterface | undefined>(undefined);
     const [lendAmount, setLendAmount] = useState('');
@@ -87,6 +86,7 @@ const BorrowModal = ({ openedItem, isModalVisible, modalHide }:
     const deployInvest = async () => {
         if (lender?.fullName && lendAmount) {
             const createTranssction: BorrowInterface = {
+                partner_name: lender.fullName,
                 partner_id: lender.id,
                 type: 'borrow',
                 amount: parseInt(lendAmount),
@@ -128,14 +128,14 @@ const BorrowModal = ({ openedItem, isModalVisible, modalHide }:
         >
             <View style={{ minHeight: 300, backgroundColor: ConstantColor.lightGray, borderRadius: 10, padding: 10, }}>
                 <View>
-                    <Text style={[global_styles.modalHeader,]}>{openedItem}</Text>
+                    <Text style={[global_styles.modalHeader,]}>Add New Borrow</Text>
                     <View style={global_styles.greyLine} />
                 </View>
 
                 <View style={{ backgroundColor: ConstantColor.white, flex: 1, }}>
-                    
+
                     <View style={{ ...global_styles.paddingVerticalTen, paddingHorizontal: 10, paddingVertical: 20 }}>
-                    <View>
+                        <View>
                             <Text style={[global_styles.modalHeader,]}>Enter Borrows Info</Text>
                         </View>
                         <Text></Text>
@@ -249,73 +249,73 @@ const BorrowModal = ({ openedItem, isModalVisible, modalHide }:
                                     </View>
                                 </TouchableOpacity>
 
-                                    <TouchableOpacity
-                                        style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 6 }}
-                                        onPress={() => setShowRepaymentDate(true)}>
+                                <TouchableOpacity
+                                    style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 6 }}
+                                    onPress={() => setShowRepaymentDate(true)}>
 
-                                        {Platform.OS === 'ios' || (
-                                            <Text style={{
-                                                color: '#111',
-                                                textAlign: 'center',
-                                                fontSize: 14,
-                                            }}>
-                                                {/* {text} */}
-                                            </Text>
-                                        )}
-                                        {showRepaymentDate && (
-                                            <DateTimePicker
-                                                testID="dateTimePicker"
-                                                value={date.repaymentDate}
-                                                mode={'date'}
-                                                is24Hour={true}
-                                                display="default"
-                                                minimumDate={minimumDateFinder()}
-                                                onChange={(event, selectedDate) => {
-                                                    onChangeWithdrowDate(event, selectedDate);
-                                                }}
-                                                textColor="#fff"
-                                                themeVariant="dark"
-                                                style={{
-                                                    width: 'auto',
-                                                    height: '100%',
-                                                    backgroundColor: ConstantColor.nevyBlue,
-                                                }}>
-
-                                            </DateTimePicker>
-                                        )}
-                                        <View
+                                    {Platform.OS === 'ios' || (
+                                        <Text style={{
+                                            color: '#111',
+                                            textAlign: 'center',
+                                            fontSize: 14,
+                                        }}>
+                                            {/* {text} */}
+                                        </Text>
+                                    )}
+                                    {showRepaymentDate && (
+                                        <DateTimePicker
+                                            testID="dateTimePicker"
+                                            value={date.repaymentDate}
+                                            mode={'date'}
+                                            is24Hour={true}
+                                            display="default"
+                                            minimumDate={minimumDateFinder()}
+                                            onChange={(event, selectedDate) => {
+                                                onChangeWithdrowDate(event, selectedDate);
+                                            }}
+                                            textColor="#fff"
+                                            themeVariant="dark"
                                             style={{
-                                                width: '100%',
-                                                flexDirection: 'row',
-                                                justifyContent: 'center',
-                                                display: Platform.OS === 'ios' ? 'none' : 'flex',
-                                                // marginTop: 10,
+                                                width: 'auto',
+                                                height: '100%',
+                                                backgroundColor: ConstantColor.nevyBlue,
                                             }}>
 
-                                            {isDateTaken.repaymentDate ? (
-                                                <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                                                    <Icon
-                                                        name="calendar"
-                                                        type="font"
-                                                        size={20}
-                                                        color={'#000'}
-                                                    />
-                                                    <Text style={{ fontWeight: 'bold', color: 'black', fontSize: 12 }}>{date.repaymentDate.toDateString()}</Text>
-                                                </View>
-                                            ) : (
-                                                <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                                                    <Icon
-                                                        name="calendar"
-                                                        type="font"
-                                                        size={20}
-                                                        color={'#000'}
-                                                    />
-                                                    <Text style={{ fontWeight: 'bold', color: 'black', fontSize: 12 }}>Repayment Date</Text>
-                                                </View>
-                                            )}
+                                        </DateTimePicker>
+                                    )}
+                                    <View
+                                        style={{
+                                            width: '100%',
+                                            flexDirection: 'row',
+                                            justifyContent: 'center',
+                                            display: Platform.OS === 'ios' ? 'none' : 'flex',
+                                            // marginTop: 10,
+                                        }}>
 
-                                        </View>
-                                    </TouchableOpacity>
+                                        {isDateTaken.repaymentDate ? (
+                                            <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                                                <Icon
+                                                    name="calendar"
+                                                    type="font"
+                                                    size={20}
+                                                    color={'#000'}
+                                                />
+                                                <Text style={{ fontWeight: 'bold', color: 'black', fontSize: 12 }}>{date.repaymentDate.toDateString()}</Text>
+                                            </View>
+                                        ) : (
+                                            <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                                                <Icon
+                                                    name="calendar"
+                                                    type="font"
+                                                    size={20}
+                                                    color={'#000'}
+                                                />
+                                                <Text style={{ fontWeight: 'bold', color: 'black', fontSize: 12 }}>Repayment Date</Text>
+                                            </View>
+                                        )}
+
+                                    </View>
+                                </TouchableOpacity>
                             </View>
                         </View>
 
