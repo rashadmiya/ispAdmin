@@ -31,6 +31,8 @@ const Borrower = () => {
     const user = useSelector((state: any) => state.loggedInUser.value);
 
     const [isLoading, setIsLoading] = useState(false);
+    const [shouldLoadAgain, setShouldLoadAgain] = useState(false);
+
     const [showModal, setShowModal] = useState(false)
     const [isUpdateModalVisible, setIsUpdateModalVisible] = useState<BorrowInterface | undefined>(undefined);
     const [newBorrowAmount, setNewBorrowAmount] = React.useState('');
@@ -46,9 +48,8 @@ const Borrower = () => {
     const [monthlyTotals, setMonthlyTotals] = useState<MonthlyTotal[]>([]);
 
     useEffect(() => {
-        // fetchData();
-        createLastTwelveMonth()
-    }, []);
+        createLastTwelveMonth();
+    }, [shouldLoadAgain]);
 
     // const fetchData = async () => {
     //     const transactionsRef = await db.collection('transactions');
@@ -104,7 +105,8 @@ const Borrower = () => {
         const twelveMonthsAgo = new Date();
         twelveMonthsAgo.setMonth(currentDate.getMonth() - 12);
 
-        const lastTwelveMonthsQuery = transactionsRef.where('type', '==', 'borrow').where('createdAt', '>=', twelveMonthsAgo).where('createdAt', '<=', currentDate);
+        const lastTwelveMonthsQuery = transactionsRef.where('type', '==', 'borrow')
+        .where('createdAt', '>=', twelveMonthsAgo).where('createdAt', '<=', currentDate).orderBy('createdAt', 'desc');
 
         await lastTwelveMonthsQuery.get().then((querySnapshot: any) => {
             const updatedMonthlyTotals: MonthlyTotal[] = [];
@@ -151,8 +153,8 @@ const Borrower = () => {
                 setNewBorrowAmount('');
                 setIsLoading(false);
                 ToastAndroid.show('borrow has been updated', 500);
-                // setIsmodalVisible(undefined);
-                setIsUpdateModalVisible(undefined)
+                setIsUpdateModalVisible(undefined);
+                setShouldLoadAgain(true);
             })
             .catch((err) => {
                 console.log(`error in update borrow=>${borrow.id}:`, err.message);
@@ -165,6 +167,7 @@ const Borrower = () => {
     const borrowModalHandler = () => {
         setShowModal(false);
     }
+
 
     const minimumDateFinder = () => {
         const today = new Date();
@@ -183,7 +186,7 @@ const Borrower = () => {
         await firestore().collection('transactions').doc(elem.id).delete()
             .then(() => {
                 ToastAndroid.show('borrow has been deleted', 500);
-
+                setShouldLoadAgain(true)
             })
             .catch((err) => {
                 Alert.alert('Warning!', `Error occour while delete borrow =>${elem.id}, Please try again`, [
@@ -227,7 +230,7 @@ const Borrower = () => {
                                             <Text style={[global_styles.textBlack, global_styles.textBold,]}>Borrow Date: {bd}</Text>
                                             <Text style={[global_styles.textBlack, global_styles.textBold,]}>Repayment Date: {rd}</Text>
                                         </View>
-                                        <View style={{display: user.role == 'admin' ? 'flex' :'none', flexDirection: 'row', justifyContent: 'space-between', }}>
+                                        <View style={{ display: user.role == 'admin' ? 'flex' : 'none', flexDirection: 'row', justifyContent: 'space-between', }}>
                                             <Button
                                                 onPress={() => setIsUpdateModalVisible(elem)}
                                                 buttonStyle={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey', padding: 2 }}
@@ -391,7 +394,7 @@ const Borrower = () => {
                     </View>
                 </Modal>
             </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', padding: 20 }}>
+            <View style={{ display: user.role == 'admin' ? 'flex' : 'none', position:'absolute', bottom:0, padding: 5 }}>
                 <FAB
                     visible={true}
                     title="Add Borrow"

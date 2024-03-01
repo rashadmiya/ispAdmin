@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View, Image } from 'react-native';
 import React from 'react';
 import { Category } from '../../constants/menuItems';
 import Animated, {
@@ -12,6 +12,10 @@ import Animated, {
 } from 'react-native-reanimated';
 import Chevron from './Chevron';
 import NestedAccordion from './Accordion_nested';
+import { useNavigation } from '@react-navigation/native';
+import { INVESTMENTS, LOANTO, NOTICES, PROJECTS, PROPOSALS, USERMANAGER } from '../../utils/constant_route';
+import { useSelector } from 'react-redux';
+import { UserInterface } from '../../interfaces/user_interface';
 
 type Props = {
     value: any;
@@ -19,9 +23,15 @@ type Props = {
 };
 
 const Accordion = ({ value, type }: Props) => {
+    let notices = useSelector((state: any) => state.notice.value);
+    let loginUser: UserInterface = useSelector((state: any) => state.loggedInUser.value);
+    const navigation: any = useNavigation();
+
+
     const listRef = useAnimatedRef();
     const heightValue = useSharedValue(0);
     const open = useSharedValue(false);
+
     const progress = useDerivedValue(() =>
         open.value ? withTiming(1) : withTiming(0),
     );
@@ -30,10 +40,51 @@ const Accordion = ({ value, type }: Props) => {
         height: heightValue.value,
     }));
 
+    const findUnredNotice = () => {
+        let unredNotice = notices.filter((notice: any) => !notice.viewer.includes(loginUser.id));
+        return unredNotice;
+    }
+
+    findUnredNotice()
+
     return (
         <View style={styles.container}>
             <Pressable
                 onPress={() => {
+                    if (type !== 'nested') {
+                        switch (value?.name) {
+                            case 'Supper Categories':
+                                return navigation.navigate(INVESTMENTS);
+                                break;
+                            case 'Categories':
+                                return navigation.navigate(INVESTMENTS);
+                                break;
+                            case 'Sub Categories':
+                                return navigation.navigate(INVESTMENTS);
+                                break;
+                            case 'Fund Manager':
+                                // return navigation.navigate(INVESTMENTS);
+                                break;
+                            case 'Persons':
+                                return navigation.navigate(USERMANAGER);
+                                break;
+                            case 'Notice':
+                                return navigation.navigate(NOTICES);
+                                break;
+
+                            case 'Proposals':
+                                return navigation.navigate(PROPOSALS);
+                                break;
+                            case 'Investors':
+                                return navigation.navigate(INVESTMENTS);
+                                break;
+                            case 'Projects':
+                                return navigation.navigate(PROJECTS);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
                     if (heightValue.value === 0) {
                         runOnUI(() => {
                             'worklet';
@@ -45,8 +96,21 @@ const Accordion = ({ value, type }: Props) => {
                     open.value = !open.value;
                 }}
                 style={styles.titleContainer}>
+
+                {value.name == "Notice" && findUnredNotice().length > 0 ? 
+                <Text style={[styles.textTitle,{color:'red'}]}>{`${value.name} ${findUnredNotice().length}`}</Text>
+                :
                 <Text style={styles.textTitle}>{value.name}</Text>
-                <Chevron progress={progress} />
+                }
+
+                {
+                    type == 'nested' ?
+                        (<Chevron progress={progress} />) : (<View >
+                            <Image source={require('../../../assets/cv.png')}
+                                style={{ height: 30, width: 30, transform: [{ rotate: `-90deg` }] }} />
+                        </View>)
+                }
+
             </Pressable>
             <Animated.View style={heightAnimationStyle}>
                 <Animated.View style={styles.contentContainer} ref={listRef}>
@@ -98,7 +162,7 @@ const styles = StyleSheet.create({
     textTitle: {
         fontSize: 16,
         color: 'black',
-        fontWeight:'bold'
+        fontWeight: 'bold'
     },
     titleContainer: {
         padding: 5,
@@ -118,6 +182,6 @@ const styles = StyleSheet.create({
     textContent: {
         fontSize: 14,
         color: 'black',
-        fontWeight:'bold'
+        fontWeight: 'bold'
     },
 });

@@ -1,24 +1,25 @@
-import React, { FC, useEffect, useState } from 'react';
-import {
-    Alert, Dimensions, Pressable, TextInput, ToastAndroid, TouchableOpacity,
-    TouchableWithoutFeedback, Platform
-} from 'react-native';
-import { StyleSheet, Text, View } from 'react-native';
-import Modal from 'react-native-modal';
-import global_styles from '../utils/global_styles';
-import { ConstantColor } from '../utils/constant_color';
-import AutoComplete from '../components/common/AutoComplete';
-import AutocompleteInput from 'react-native-autocomplete-input';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import firestore from '@react-native-firebase/firestore';
+import React, { useState } from 'react';
+import {
+    Alert, Dimensions,
+    Platform,
+    StyleSheet, Text,
+    TextInput, ToastAndroid, TouchableOpacity,
+    TouchableWithoutFeedback,
+    View
+} from 'react-native';
+import { SelectList } from 'react-native-dropdown-select-list';
+import Modal from 'react-native-modal';
+import { useSelector } from 'react-redux';
 import { LossInterface } from '../interfaces/TransactionInterface';
 import { UserInterface } from '../interfaces/user_interface';
-import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+import { ConstantColor } from '../utils/constant_color';
 import Icon from '../utils/customIcons';
-import { SelectList } from 'react-native-dropdown-select-list';
-import { useSelector } from 'react-redux';
+import global_styles from '../utils/global_styles';
 
-const LossModal = ({ openedItem, isModalVisible, modalHide }:
-    { openedItem: any, isModalVisible: boolean, modalHide: () => void }) => {
+const LossModal = ({ openedItem, isModalVisible, modalHide, }:
+    { openedItem: any, isModalVisible: boolean, modalHide: (afterThen?:any) => void,  }) => {
     const reduxLossConstant = useSelector((state: any) => state.lossConstant.value);
 
     const [losser, setLosser] = useState<UserInterface | undefined>(undefined);
@@ -44,23 +45,22 @@ const LossModal = ({ openedItem, isModalVisible, modalHide }:
     }
 
 
-
-    const deployInvest = async () => {
-        if (losser?.fullName && lossAmount) {
+    const deployInvest = () => {
+        if (lossBy && lossAmount) {
             const createTranssction: LossInterface = {
-                // partner_name: losser.fullName,
-                // partner_id: losser.id,
-                lossReason:lossBy,
+                lossReason: lossBy,
                 type: 'loss',
                 amount: parseInt(lossAmount),
                 createdAt: firestore.FieldValue.serverTimestamp(),
                 dateOfLoss: date,
             }
-            await firestore().collection('transactions').doc().set(createTranssction)
-                .then(() => {
-                    modalHide();
+             firestore().collection('transactions').doc().set(createTranssction)
+                .then(async () => {
+                    let afterThen= true;
+                    modalHide(afterThen);
                     setLossAmount('');
-                    setLosser(undefined);
+                    setLossBy('');
+                    
                     ToastAndroid.show('Income Updated Successfully!', ToastAndroid.SHORT);
                 })
                 .catch((error: any) => console.log(error));
@@ -70,6 +70,8 @@ const LossModal = ({ openedItem, isModalVisible, modalHide }:
         }
         return Alert.alert('Alert', 'Please Enter valid name and amount')
     }
+
+    
 
     return (
         // <View style={{ flex: 1 }}>

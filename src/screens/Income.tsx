@@ -32,11 +32,10 @@ const Income = () => {
     const [monthlyTotals, setMonthlyTotals] = useState<MonthlyTotal[]>([]);
 
     useEffect(() => {
-        // fetchData();
-        createLastTwelveMonth()
+        createLastTwelveMonth();
     }, []);
 
-    
+
 
     const createLastTwelveMonth = async () => {
         setIsLoading(true)
@@ -45,7 +44,8 @@ const Income = () => {
         const twelveMonthsAgo = new Date();
         twelveMonthsAgo.setMonth(currentDate.getMonth() - 12);
 
-        const lastTwelveMonthsQuery = transactionsRef.where('type', '==', 'income').where('createdAt', '>=', twelveMonthsAgo).where('createdAt', '<=', currentDate);
+        const lastTwelveMonthsQuery = transactionsRef.where('type', '==', 'income')
+        .where('createdAt', '>=', twelveMonthsAgo).where('createdAt', '<=', currentDate).orderBy('createdAt', 'desc');
 
         await lastTwelveMonthsQuery.get().then((querySnapshot: any) => {
             const updatedMonthlyTotals: MonthlyTotal[] = [];
@@ -54,11 +54,6 @@ const Income = () => {
                 const transactionData = doc.data();
                 transactionData.id = doc.id;
                 if (!transactionData) return setIsLoading(false);
-
-                const transactionDate = transactionData.createdAt.toDate();
-                const month = transactionDate.getMonth() + 1;
-                const year = transactionDate.getFullYear();
-                const monthYearKey = `${month < 10 ? '0' : ''}${month}-${year}`;
 
                 updatedMonthlyTotals.push(transactionData);
                 setIsLoading(false)
@@ -87,11 +82,11 @@ const Income = () => {
             incomeFrom: incomeFrom,
             id: income.id,
         })
-            .then(() => {
+            .then(async() => {
                 setNewIncomeAmount('');
                 setIsLoading(false);
+                await createLastTwelveMonth();
                 ToastAndroid.show('Income has been updated', 500);
-                // setIsmodalVisible(undefined);
                 setIsUpdateModalVisible(undefined)
             })
             .catch((err) => {
@@ -104,20 +99,24 @@ const Income = () => {
 
 
 
-    const deleteLossTransection = async (elem: IncomeInterface) => {
+    const deleteIncomeTransaction = async (elem: IncomeInterface) => {
         await firestore().collection('transactions').doc(elem.id).delete()
-            .then(() => {
+            .then(async() => {
+                await createLastTwelveMonth();
                 ToastAndroid.show('loss has been deleted', 500);
 
             })
             .catch((err) => {
                 Alert.alert('Warning!', `Error occour while delete income=>${elem.id}, Please try again`, [
-                    { text: 'Okey', onPress: () => {} }
+                    { text: 'Okey', onPress: () => { } }
                 ]);
             })
     }
 
-    const incomeModalHandler = () => {
+    const incomeModalHandler = async(afterThen:any) => {
+        if(afterThen){
+            await createLastTwelveMonth()
+        }
         setShowModal(false);
     }
 
@@ -156,8 +155,8 @@ const Income = () => {
                                         <View>
                                             <Text style={[global_styles.textBlack, global_styles.textBold,]}>Income Date: {incomeDate}</Text>
                                         </View>
-                                        
-                                        <View style={{ display: loggedInUser.role == 'admin' ? 'flex' : 'none',flexDirection: 'row', justifyContent: 'space-between', }}>
+
+                                        <View style={{ display: loggedInUser.role == 'admin' ? 'flex' : 'none', flexDirection: 'row', justifyContent: 'space-between', }}>
                                             <Button
                                                 onPress={() => setIsUpdateModalVisible(elem)}
                                                 buttonStyle={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey', padding: 2 }}
@@ -175,7 +174,7 @@ const Income = () => {
                                                                 onPress: () => { },
                                                                 style: 'cancel',
                                                             },
-                                                            { text: 'OK', onPress: () => deleteLossTransection(elem) },
+                                                            { text: 'OK', onPress: () => deleteIncomeTransaction(elem) },
                                                         ])
                                                 }}
                                                 buttonStyle={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey', padding: 2 }}
@@ -258,7 +257,7 @@ const Income = () => {
                     </View>
                 </Modal>
             </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', padding: 20 }}>
+            <View style={{ display: loggedInUser.role == 'admin' ? 'flex' : 'none', position: 'absolute', bottom: 0, padding: 5}}>
                 <FAB
                     visible={true}
                     title="Add Income"

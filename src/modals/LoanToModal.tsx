@@ -15,7 +15,8 @@ import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/d
 import Icon from '../utils/customIcons';
 import { Button } from '@rneui/base';
 
-const LoanToModal = ({ openedItem, isModalVisible, modalHide }: { openedItem: any, isModalVisible: boolean, modalHide: () => void }) => {
+const LoanToModal = ({ openedItem, isModalVisible, modalHide, }: 
+    { openedItem: any, isModalVisible: boolean, modalHide: (afterThen?:any) => void,  }) => {
     const [borrower, setBorrower] = useState<UserInterface | undefined>(undefined);
     const [lendAmount, setLendAmount] = useState('');
     const [condition, setCondition] = useState('');
@@ -106,7 +107,7 @@ const LoanToModal = ({ openedItem, isModalVisible, modalHide }: { openedItem: an
             const createTranssction: LoanToInterface = {
                 borrower: borrower.fullName,
                 borrower_id: borrower.id,
-                type: 'LoanTo',
+                type: 'loan_to',
                 amount: parseInt(lendAmount),
                 createdAt: firestore.FieldValue.serverTimestamp(),
                 borrowDate: date.lendDate,
@@ -116,7 +117,8 @@ const LoanToModal = ({ openedItem, isModalVisible, modalHide }: { openedItem: an
             }
             await firestore().collection('transactions').doc().set(createTranssction)
                 .then(() => {
-                    modalHide();
+                    let afterThen = true;
+                    modalHide(afterThen);
                     setLendAmount('');
                     setBorrower(undefined);
                     ToastAndroid.show('Borrows Update Successfull!', ToastAndroid.SHORT);

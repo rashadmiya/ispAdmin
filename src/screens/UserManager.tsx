@@ -9,9 +9,9 @@ import { UserInterface } from '../interfaces/user_interface';
 import Loader from '../utils/Loder';
 import ItemContainerComp from '../components/ItemContainerComp';
 const data = [
-    { key: '1', value: 'Partner' },
-    { key: '2', value: 'employee' },
-    // {key:'3', value:'Cameras'},
+    { key: '1', value: 'partner' },
+    { key: '2', value: 'admin' },
+    { key: '3', value: 'employee' },
     // {key:'4', value:'Computers', disabled:true},
 ];
 
@@ -23,19 +23,20 @@ const UserManager = () => {
 
 
     useEffect(() => {
-        const loadEmployes = async () => {
-            setLoading(true)
-            let tempEmployes: any = [];
-            let snapshot = await firestore().collection('employes').get();
+        const unsubscribe = firestore().collection('employes')
+            .onSnapshot((querySnapshot) => {
+                const updatedEmployes: any = [];
+                querySnapshot.forEach((doc) => {
+                    updatedEmployes.push({ id: doc.id, ...doc.data() });
+                });
+                setEmployes(updatedEmployes)
+                setLoading(false);
+            });
 
-            snapshot.docs.forEach((elem) => {
-                tempEmployes.push(elem.data());
-            })
+        return () => {
+            unsubscribe();
+        };
 
-            setEmployes(tempEmployes);
-            setLoading(false);
-        }
-        loadEmployes();
     }, []);
 
     const hideModal = () => {
@@ -141,7 +142,7 @@ const UserManager = () => {
                                         if (isModalVisible) updateUserRole(isModalVisible.id)
                                     }}
                                     style={{ backgroundColor: ConstantColor.secondary, opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey' }}>
-                                    <Text style={{ color: 'black', fontWeight: '800', fontSize: 14, paddingVertical: 8, paddingHorizontal: 5, textAlign:'center' }}>
+                                    <Text style={{ color: 'black', fontWeight: '800', fontSize: 14, paddingVertical: 8, paddingHorizontal: 5, textAlign: 'center' }}>
                                         Update
                                     </Text>
                                 </TouchableOpacity>

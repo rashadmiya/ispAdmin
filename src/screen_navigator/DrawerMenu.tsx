@@ -4,28 +4,54 @@ import Icon from '../utils/customIcons';
 import { ConstantColor } from '../utils/constant_color';
 import global_styles from '../utils/global_styles';
 import { AuthContext } from '../utils/auth_context';
-import { menuItems } from '../constants/menuItems';
+import { ownerMenuItems, partnerMenuItems } from '../constants/menuItems';
 import Accordion from '../components/drawer/Drawer_accordion';
 import { useDispatch, useSelector } from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
 import { BORROWERS, USERMANAGER } from '../utils/constant_route';
 import { removeUser } from '../redux/slices/login_user';
+import { UserInterface } from '../interfaces/user_interface';
+import loadUser from '../helper-function/loadLoginUser';
+
 const DrawerMenu = (props: any) => {
-  const reduxUser = useSelector((state: any) => state.loggedInUser.value);
+  let loginUser: UserInterface = useSelector((state: any) => state.loggedInUser.value);
   const { signOut } = useContext(AuthContext);
-  const [drawerItems, setDrawerItems] = useState([]);
+  const [drawerItems, setDrawerItems] = useState<any[]>([]);
   const dispatch = useDispatch();
+
   useEffect(() => {
-    console.log("user:", reduxUser)
     const loadDrawerContent = async () => {
-      let snapshot = await firestore().collection('drawer_items').doc('JDwikQCC6Bsgf5VxyBdy').get();
-      let temp = snapshot.data();
-      if (temp) {
-        setDrawerItems(temp.menuItems)
+      // let snapshot = await firestore().collection('drawer_items').doc('JDwikQCC6Bsgf5VxyBdy').get();
+      // let temp = snapshot.data();
+      // if (temp) {
+      //   setDrawerItems(temp.menuItems)
+      // }
+
+      if (!loginUser.role) {
+        let user = await loadUser();
+        if (user && user.role == 'admin') {
+          setDrawerItems(ownerMenuItems);
+        }
+        if (user && user.role == 'partner') {
+          setDrawerItems(partnerMenuItems);
+        }
+        if (user && user.role == 'employee') {
+          setDrawerItems([]);
+        }
+      }
+
+      if (loginUser.role == 'admin') {
+        setDrawerItems(ownerMenuItems);
+      }
+      if (loginUser.role == 'partner') {
+        setDrawerItems(partnerMenuItems);
+      }
+      if (loginUser && loginUser.role == 'employee') {
+        setDrawerItems([]);
       }
     }
     loadDrawerContent();
-  }, []);
+  }, [loginUser]);
 
 
   return (
@@ -42,7 +68,7 @@ const DrawerMenu = (props: any) => {
             onPress={() => props.navigation.navigate(USERMANAGER)}
             // onPress={() => props.navigation.navigate(BORROWERS)}
 
-            style={{ position: 'absolute', top: 5, right: 5, backgroundColor: ConstantColor.febGreen, opacity: 0.7, borderRadius: 100 }}>
+            style={{ display: loginUser.role == 'admin' ? 'flex' : 'none', position: 'absolute', top: 5, right: 5, backgroundColor: ConstantColor.febGreen, opacity: 0.7, borderRadius: 100 }}>
             <Text style={{ color: 'white', fontWeight: '800', fontSize: 16, paddingVertical: 4, paddingHorizontal: 10 }}>
               Manage Users
             </Text>
@@ -51,7 +77,7 @@ const DrawerMenu = (props: any) => {
 
           <View style={{ padding: 10, marginTop: 'auto' }}>
             <Text style={{ color: 'white', fontWeight: 'bold' }}>
-              User: {reduxUser.fullName}
+              User: {loginUser.fullName}
             </Text>
           </View>
           {/* 
@@ -64,16 +90,9 @@ const DrawerMenu = (props: any) => {
       </View>
 
 
-      <ScrollView contentContainerStyle={{ margin: 10,}}>
+      <ScrollView contentContainerStyle={{ margin: 10, }}>
         <View style={global_styles.sizedBoxTen} ></View>
         {drawerItems.map((val: any, index) => (
-          // <TouchableOpacity
-          //   onPress={onPress}
-          //   key={name}
-          //   style={styles.drawerItem}>
-          //   {icon}
-          //   <Text style={[styles.drawerItemName, global_styles.shadawText]}>{name}</Text>
-          // </TouchableOpacity>
           <Accordion key={index} value={val} type={val.type} />
         ))}
       </ScrollView>
@@ -83,12 +102,13 @@ const DrawerMenu = (props: any) => {
           Alert.alert('Alert', 'This action will sign you out, make sure by pressing confirm',
             [{ text: 'Cancel' }, {
               text: 'Confirm', onPress: async () => {
+                dispatch(removeUser({}));
                 await signOut();
-                dispatch(removeUser({}))
+
               }
             }])
         }}
-        style={[styles.drawerItem, { marginTop: 'auto', alignSelf: 'center', marginBottom: 20, backgroundColor:ConstantColor.febGreen }]}>
+        style={[styles.drawerItem, { marginTop: 'auto', alignSelf: 'center', marginBottom: 20, backgroundColor: ConstantColor.febGreen }]}>
         <Icon type="ant" style={{ color: 'gray' }} name="logout" size={20} />
         <Text style={[styles.drawerItemName, global_styles.shadawText]}>Logout</Text>
       </TouchableOpacity>

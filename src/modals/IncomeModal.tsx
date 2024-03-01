@@ -22,7 +22,7 @@ interface IInterface {
 }
 
 const IncomeModal = ({ openedItem, isModalVisible, modalHide }:
-    { openedItem: any, isModalVisible: boolean, modalHide: () => void }) => {
+    { openedItem: any, isModalVisible: boolean, modalHide: (afterThen?:any) => void }) => {
 
     const reduxLossConstant = useSelector((state: any) => state.lossConstant.value);
     const [earner, setEarner] = useState<IInterface | undefined>(undefined);
@@ -60,7 +60,8 @@ const IncomeModal = ({ openedItem, isModalVisible, modalHide }:
             }
             await firestore().collection('transactions').doc().set(createTranssction)
                 .then(() => {
-                    modalHide();
+                    let afterThen = true;
+                    modalHide(afterThen);
                     setEarnAmount('');
                     setIncomeSector('');
                     ToastAndroid.show('Income Updated Successfully!', ToastAndroid.SHORT);
@@ -178,7 +179,7 @@ const IncomeModal = ({ openedItem, isModalVisible, modalHide }:
                                             mode={'date'}
                                             is24Hour={true}
                                             display="default"
-                                            minimumDate={minimumDateFinder()}
+                                            // minimumDate={minimumDateFinder()}
                                             onChange={(event, selectedDate) => {
                                                 onChangeInvestDate(event, selectedDate);
                                             }}

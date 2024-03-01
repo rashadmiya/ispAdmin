@@ -14,7 +14,7 @@ import { UserInterface } from '../interfaces/user_interface';
 import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import Icon from '../utils/customIcons';
 
-const BorrowModal = ({ isModalVisible, modalHide }: { isModalVisible: boolean, modalHide: () => void }) => {
+const BorrowModal = ({ isModalVisible, modalHide }: { isModalVisible: boolean, modalHide: (afterThen?:any) => void,}) => {
     const [selectInvestOption, setSelectInvestOption] = useState(1);
     const [lender, setLender] = useState<UserInterface | undefined>(undefined);
     const [lendAmount, setLendAmount] = useState('');
@@ -96,10 +96,12 @@ const BorrowModal = ({ isModalVisible, modalHide }: { isModalVisible: boolean, m
             }
             await firestore().collection('transactions').doc().set(createTranssction)
                 .then(() => {
-                    modalHide();
+                    let afterThen = true;
+                    modalHide(afterThen);
                     setLendAmount('');
                     setLender(undefined);
                     ToastAndroid.show('Borrows Update Successfull!', ToastAndroid.SHORT);
+
                 })
                 .catch((error: any) => console.log(error));
 

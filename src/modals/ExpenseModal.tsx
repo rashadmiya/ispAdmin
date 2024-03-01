@@ -21,7 +21,7 @@ interface EInterface {
 }
 
 const ExpenseModal = ({ openedItem, isModalVisible, modalHide }:
-    { openedItem: any, isModalVisible: boolean, modalHide: () => void }) => {
+    { openedItem: any, isModalVisible: boolean, modalHide: (afterThen?:any) => void }) => {
         
     const reduxExpenseConstant = useSelector((state: any) => state.expenseConstant.value);
     const [expenseTo, setExpenseTo] = useState('');
@@ -60,7 +60,8 @@ const ExpenseModal = ({ openedItem, isModalVisible, modalHide }:
             }
             await firestore().collection('transactions').doc().set(createTranssction)
                 .then(() => {
-                    modalHide();
+                    let afterThen = true;
+                    modalHide(afterThen);
                     setExpenseAmount('');
                     setExpenseTo('');
                     ToastAndroid.show('Expense Updated Successfully!', ToastAndroid.SHORT);

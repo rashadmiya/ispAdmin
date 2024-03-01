@@ -16,7 +16,7 @@ import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/d
 import Icon from '../utils/customIcons';
 
 const InvestModal = ({ openedItem, isModalVisible, modalHide }:
-    { openedItem: any, isModalVisible: boolean, modalHide: () => void }) => {
+    { openedItem: any, isModalVisible: boolean, modalHide: (afterThen?:any) => void }) => {
     const [selectInvestOption, setSelectInvestOption] = useState(1);
     const [investor, setInvestor] = useState<UserInterface | undefined>(undefined);
     const [investAmount, setInvestAmount] = useState('');
@@ -94,11 +94,13 @@ const InvestModal = ({ openedItem, isModalVisible, modalHide }:
                 amount: parseInt(investAmount),
                 createdAt: firestore.FieldValue.serverTimestamp(),
                 investmentDate: date.investDate,
-                withdrawDate: isDateTaken.withdrowDate ? date.withdrawDate : null
+                withdrawDate: isDateTaken.withdrowDate ? date.withdrawDate : null,
+                investType: selectInvestOption == 1? 'parmanent' : 'terminal'
             }
             await firestore().collection('transactions').doc().set(createTranssction)
                 .then(() => {
-                    modalHide();
+                    let afterThen = true;
+                    modalHide(afterThen);
                     setInvestAmount('');
                     setInvestor(undefined);
                     ToastAndroid.show('Investment Successfull!', ToastAndroid.SHORT);

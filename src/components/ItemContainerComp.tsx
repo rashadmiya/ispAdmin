@@ -9,12 +9,12 @@ type props = {
 const ItemContainerComp = ({employee, setIsmodalVisible}:props) => {
     return (
         <View style={global_styles.borderBox}>
-            <View style={global_styles.justifyBetweenCenter}>
-                <Text style={[global_styles.textMedium, global_styles.textBold, { width: '80%' }]}>Name: {employee.fullName}</Text>
-                <Text style={[global_styles.textMedium, global_styles.textBold, { width: '80%' }]}>Role: {employee.role}</Text>
+            <View style={[global_styles.justifyBetweenCenter]}>
+                <Text style={[global_styles.textMedium, global_styles.textBold, ]}>Name: {employee.fullName}</Text>
+                <Text style={[global_styles.textMedium, global_styles.textBold, ]}>Role: {employee.role}</Text>
             </View>
 
-            <Text style={[global_styles.textMedium, global_styles.textBold, { width: '80%' }]}>Invest: {employee.invest ? employee.invest : 0}৳</Text>
+            {/* <Text style={[global_styles.textMedium, global_styles.textBold, ]}>Invest: {employee.invest ? employee.invest : 0}৳</Text> */}
 
             <View style={{ flexDirection: 'row', justifyContent: 'flex-start', paddingVertical: 5 }}>
                 <TouchableOpacity

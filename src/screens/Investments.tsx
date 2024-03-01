@@ -23,6 +23,7 @@ interface MonthlyTotal {
 
 const Investments = () => {
     const user = useSelector((state: any) => state.loggedInUser.value);
+    const [monthlyTotals, setMonthlyTotals] = useState<MonthlyTotal[]>([]);
 
     const [isLoading, setIsLoading] = useState(false);
     const [showModal, setShowModal] = useState(false)
@@ -53,14 +54,10 @@ const Investments = () => {
         setIsDateTaken({ investDate: isDateTaken.investDate, withdrowDate: true });
     }
 
-    const [monthlyTotals, setMonthlyTotals] = useState<MonthlyTotal[]>([]);
 
     useEffect(() => {
-        // fetchData();
-        createLastTwelveMonth()
+        createLastTwelveMonth();
     }, []);
-
-
 
     const createLastTwelveMonth = async () => {
         setIsLoading(true)
@@ -69,7 +66,8 @@ const Investments = () => {
         const twelveMonthsAgo = new Date();
         twelveMonthsAgo.setMonth(currentDate.getMonth() - 12);
 
-        const lastTwelveMonthsQuery = transactionsRef.where('type', '==', 'invest').where('createdAt', '>=', twelveMonthsAgo).where('createdAt', '<=', currentDate);
+        const lastTwelveMonthsQuery = transactionsRef.where('type', '==', 'invest')
+            .where('createdAt', '>=', twelveMonthsAgo).where('createdAt', '<=', currentDate).orderBy('createdAt', 'desc');
 
         await lastTwelveMonthsQuery.get().then((querySnapshot: any) => {
             const updatedMonthlyTotals: MonthlyTotal[] = [];
@@ -78,11 +76,6 @@ const Investments = () => {
                 const transactionData = doc.data();
                 transactionData.id = doc.id;
                 if (!transactionData) return setIsLoading(false);
-
-                const transactionDate = transactionData.createdAt.toDate();
-                const month = transactionDate.getMonth() + 1;
-                const year = transactionDate.getFullYear();
-                const monthYearKey = `${month < 10 ? '0' : ''}${month}-${year}`;
 
                 updatedMonthlyTotals.push(transactionData);
                 setIsLoading(false)
@@ -99,7 +92,6 @@ const Investments = () => {
         });
     };
 
-
     const hideModal = () => {
         setIsUpdateModalVisible(undefined)
     }
@@ -111,9 +103,10 @@ const Investments = () => {
             withdrawDate: date.withdrawDate || invest.withdrawDate,
             id: invest.id,
         })
-            .then(() => {
+            .then(async () => {
                 setInvestAmount('');
                 setIsUpdateModalVisible(undefined);
+                await createLastTwelveMonth();
                 ToastAndroid.show('Invest has been updated', 500);
             })
             .catch((err) => {
@@ -123,11 +116,11 @@ const Investments = () => {
             })
     };
 
-    const deleteLossTransection = async (elem: InvestInterface) => {
+    const deleteInvestTransaction = async (elem: InvestInterface) => {
         await firestore().collection('transactions').doc(elem.id).delete()
-            .then(() => {
+            .then(async () => {
+                await createLastTwelveMonth();
                 ToastAndroid.show('Invest has been deleted', 500);
-
             })
             .catch((err) => {
                 Alert.alert('Warning!', `Error occour while delete invest=>${elem.id}, Please try again`, [
@@ -137,7 +130,10 @@ const Investments = () => {
     }
 
 
-    const borrowModalHandler = () => {
+    const investModalHandler = async (afterThen: any) => {
+        if (afterThen) {
+            await createLastTwelveMonth();
+        }
         setShowModal(false);
     }
 
@@ -160,10 +156,12 @@ const Investments = () => {
                 >
                     {
                         monthlyTotals.map((elem: any, index) => {
-                            // let bd = elem.borrowDate.toDate().toDateString();
-                            let idate = elem.investmentDate.toDate().toDateString();
+                            
+                            let idate = elem?.investmentDate?.toDate().toDateString();
+                            let wdate = elem?.withdrawDate?.toDate().toDateString();
                             return (
-                                <View style={global_styles.borderBox} key={index}>
+                                <View style={[global_styles.borderBox,{marginBottom:15}]} 
+                                key={index}>
                                     <View style={global_styles.justifyBetweenCenter}>
                                         <Text style={[{ width: '50%', color: 'black', fontSize: 16, fontWeight: 'bold', textAlign: 'left' }]}>Investor: {elem.partner_name}</Text>
                                         <Text style={[{ width: '50%', color: 'black', fontSize: 16, fontWeight: 'bold', textAlign: 'right' }]}>Amount: {elem.amount}৳</Text>
@@ -174,8 +172,10 @@ const Investments = () => {
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5 }}>
                                         <View>
                                             <Text style={[global_styles.textBlack, global_styles.textBold,]}>Investment Date: {idate}</Text>
+                                            {wdate && (<Text style={[global_styles.textBlack, global_styles.textBold,]}>Withdraw Date: {wdate}</Text>)}
+                                            {elem.investType && (<Text style={[global_styles.textBlack, global_styles.textBold,]}>Type: {elem.investType}</Text>)}
                                         </View>
-                                        <View style={{display: user.role == 'admin' ? 'flex' :'none', flexDirection: 'row', justifyContent: 'space-between', }}>
+                                        <View style={{ display: user.role == 'admin' ? 'flex' : 'none', flexDirection: 'row', justifyContent: 'space-between', }}>
                                             <Button
                                                 onPress={() => setIsUpdateModalVisible(elem)}
                                                 buttonStyle={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey', padding: 2 }}
@@ -193,7 +193,7 @@ const Investments = () => {
                                                                 onPress: () => { },
                                                                 style: 'cancel',
                                                             },
-                                                            { text: 'OK', onPress: () => deleteLossTransection(elem) },
+                                                            { text: 'OK', onPress: () => deleteInvestTransaction(elem) },
                                                         ])
                                                 }}
                                                 buttonStyle={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey', padding: 2 }}
@@ -351,7 +351,7 @@ const Investments = () => {
                 </Modal>
             </View>
 
-            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', padding: 20 }}>
+            <View style={{ display: user.role == 'admin' ? 'flex' : 'none', position: 'absolute', bottom: 0, padding: 5 }}>
                 <FAB
                     visible={true}
                     title="Add Investment"
@@ -363,7 +363,7 @@ const Investments = () => {
             </View>
 
             <View>
-                <InvestModal openedItem={'invest'} isModalVisible={showModal} modalHide={borrowModalHandler} />
+                <InvestModal openedItem={'invest'} isModalVisible={showModal} modalHide={investModalHandler} />
             </View>
 
         </SafeAreaView >

@@ -23,32 +23,59 @@ interface MonthlyTotal {
 const Losses = () => {
     const reduxLossConstant = useSelector((state: any) => state.lossConstant.value);
     const user = useSelector((state: any) => state.loggedInUser.value);
-
     const [lossReason, setLossReason] = React.useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [shouldLoadAgain, setShouldLoadAgain] = useState(false);
     const [showModal, setShowModal] = useState(false)
     const [isUpdateModalVisible, setIsUpdateModalVisible] = useState<LossInterface | undefined>(undefined);
     const [newLossAmount, setNewLossAmount] = useState('');
 
-
-
     const [monthlyTotals, setMonthlyTotals] = useState<MonthlyTotal[]>([]);
 
-    useEffect(() => {
-        // fetchData();
-        createLastTwelveMonth()
-    }, []);
+    // useEffect(() => {
+    //     setIsLoading(true);
+    //     const currentDate = new Date();
+    //     const twelveMonthsAgo = new Date();
+    //     twelveMonthsAgo.setMonth(currentDate.getMonth() - 12);
 
+    //     const query = firestore().collection('transactions')
+    //         .where('createdAt', '>=', twelveMonthsAgo).where('createdAt', '<=', currentDate);
+    //     // query.where('type', '==', 'loss')
+    //     const unsubscribe = query.where('type', '==', 'loss').onSnapshot((snapshot) => {
+    //         const updatedMonthlyTotals: MonthlyTotal[] = [];
+    //         snapshot.forEach((doc: any) => {
+    //             const transactionData = doc.data();
+    //             if (!transactionData) return;
+    //             transactionData.id = doc.id;
+
+    //             updatedMonthlyTotals.push(transactionData);
+    //             setIsLoading(false)
+    //         });
+
+    //         if (!isLoading) {
+    //             setMonthlyTotals(updatedMonthlyTotals);
+    //         }
+    //     });
+
+    //     // Unsubscribe from snapshot listener when component unmounts
+    //     return () => unsubscribe();
+    // }, []);
+
+    useEffect(() => {
+        createLastTwelveMonth();
+    }, [shouldLoadAgain])
 
 
     const createLastTwelveMonth = async () => {
+        console.log("load again call")
         setIsLoading(true)
         const transactionsRef = await firestore().collection('transactions');
         const currentDate = new Date();
         const twelveMonthsAgo = new Date();
         twelveMonthsAgo.setMonth(currentDate.getMonth() - 12);
 
-        const lastTwelveMonthsQuery = transactionsRef.where('type', '==', 'loss').where('createdAt', '>=', twelveMonthsAgo).where('createdAt', '<=', currentDate);
+        const lastTwelveMonthsQuery = transactionsRef.where('type', '==', 'loss')
+            .where('createdAt', '>=', twelveMonthsAgo).where('createdAt', '<=', currentDate).orderBy('createdAt', 'desc');
 
         await lastTwelveMonthsQuery.get().then((querySnapshot: any) => {
             const updatedMonthlyTotals: MonthlyTotal[] = [];
@@ -58,11 +85,6 @@ const Losses = () => {
                 transactionData.id = doc.id;
                 // console.log("load data :", doc.data())
                 if (!transactionData) return setIsLoading(false);
-
-                const transactionDate = transactionData.createdAt.toDate();
-                const month = transactionDate.getMonth() + 1;
-                const year = transactionDate.getFullYear();
-                const monthYearKey = `${month < 10 ? '0' : ''}${month}-${year}`;
 
                 updatedMonthlyTotals.push(transactionData);
                 setIsLoading(false)
@@ -91,12 +113,12 @@ const Losses = () => {
             dateOfLoss: loss.dateOfLoss,
             id: loss.id,
         })
-            .then(() => {
+            .then(async () => {
                 setLossReason('');
                 setIsLoading(false);
                 ToastAndroid.show('loss has been updated', 500);
-                // setIsmodalVisible(undefined);
-                setIsUpdateModalVisible(undefined)
+                setIsUpdateModalVisible(undefined);
+                await createLastTwelveMonth();
             })
             .catch((err) => {
                 console.log(`error in update user=>${loss.id} role:`, err.message);
@@ -114,7 +136,7 @@ const Losses = () => {
         await firestore().collection('transactions').doc(elem.id).delete()
             .then(() => {
                 ToastAndroid.show('loss has been deleted', 500);
-
+                createLastTwelveMonth();
             })
             .catch((err) => {
                 Alert.alert('Warning!', `Error occour while delete loss=>${elem.id}, Please try again`, [
@@ -123,9 +145,39 @@ const Losses = () => {
             })
     }
 
-    const lossModalHandler = () => {
+    const lossModalHandler = (afterThen:any) => {
+        if(afterThen){
+            shouldLoadAgain? setShouldLoadAgain(false):setShouldLoadAgain(true);
+        }
         setShowModal(false);
     }
+
+    const submitInvest = async (lossBy: string, lossAmount: string, date: any, setLossAmount: any, setLossBy: any) => {
+        if (lossBy && lossAmount) {
+            const createTranssction: LossInterface = {
+                lossReason: lossBy,
+                type: 'loss',
+                amount: parseInt(lossAmount),
+                createdAt: firestore.FieldValue.serverTimestamp(),
+                dateOfLoss: date,
+            }
+            await firestore().collection('transactions').doc().set(createTranssction)
+                .then(async () => {
+                    await createLastTwelveMonth();
+                    setLossAmount('');
+                    setLossBy('');
+                    setShowModal(false);
+                    ToastAndroid.show('Income Updated Successfully!', ToastAndroid.SHORT);
+                })
+                .catch((error: any) => console.log(error));
+
+            return;
+
+        }
+        return Alert.alert('Alert', 'Please Enter valid name and amount')
+    }
+
+
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: ConstantColor.white }}>
             {isLoading && <Loader />}
@@ -147,7 +199,7 @@ const Losses = () => {
                         monthlyTotals.map((elem: any, index) => {
                             let lOdate = elem.dateOfLoss.toDate().toDateString();
                             return (
-                                <View style={global_styles.borderBox} key={index}>
+                                <View style={[global_styles.borderBox, { marginBottom: 5 }]} key={index}>
                                     <View style={global_styles.justifyBetweenCenter}>
                                         <Text style={[{ width: '50%', color: 'black', fontSize: 16, fontWeight: 'bold', textAlign: 'left' }]}>Loss From: {elem?.lossReason}</Text>
                                         <Text style={[{ width: '50%', color: 'black', fontSize: 16, fontWeight: 'bold', textAlign: 'right' }]}>Amount: {elem.amount}৳</Text>
@@ -160,7 +212,7 @@ const Losses = () => {
                                             <Text style={[global_styles.textBlack, global_styles.textBold,]}>Date: {lOdate}</Text>
                                         </View>
 
-                                        <View style={{ display: user.role == 'admin' ? 'flex' :'none',flexDirection: 'row', justifyContent: 'space-between', }}>
+                                        <View style={{ display: user.role == 'admin' ? 'flex' : 'none', flexDirection: 'row', justifyContent: 'space-between', }}>
                                             <Button
                                                 onPress={() => setIsUpdateModalVisible(elem)}
                                                 buttonStyle={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey', padding: 2 }}
@@ -261,7 +313,9 @@ const Losses = () => {
                 </Modal>
             </View>
 
-            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', padding: 20 }}>
+            <View style={{
+                display: user.role == 'admin' ? 'flex' : 'none', position: 'absolute', bottom: 0, padding: 5
+            }}>
                 <FAB
                     visible={true}
                     title="Add Loss"

@@ -26,6 +26,8 @@ const Expenses = () => {
 
     const [expenseTo, setExpenseTo] = React.useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [shouldLoadAgain, setShouldLoadAgain] = useState(false);
+
     const [showModal, setShowModal] = useState(false)
     const [isUpdateModalVisible, setIsUpdateModalVisible] = useState<ExpenditureInterface | undefined>(undefined);
     const [newExpenseAmount, setNewExpenseAmount] = useState('');
@@ -34,9 +36,8 @@ const Expenses = () => {
     const [monthlyTotals, setMonthlyTotals] = useState<MonthlyTotal[]>([]);
 
     useEffect(() => {
-        // fetchData();
         createLastTwelveMonth()
-    }, []);
+    }, [shouldLoadAgain]);
 
 
 
@@ -47,7 +48,8 @@ const Expenses = () => {
         const twelveMonthsAgo = new Date();
         twelveMonthsAgo.setMonth(currentDate.getMonth() - 12);
 
-        const lastTwelveMonthsQuery = transactionsRef.where('type', '==', 'expense').where('createdAt', '>=', twelveMonthsAgo).where('createdAt', '<=', currentDate);
+        const lastTwelveMonthsQuery = transactionsRef.where('type', '==', 'expense').where('createdAt', '>=', twelveMonthsAgo)
+        .where('createdAt', '<=', currentDate).orderBy('createdAt', 'desc');
 
         await lastTwelveMonthsQuery.get().then((querySnapshot: any) => {
             const updatedMonthlyTotals: MonthlyTotal[] = [];
@@ -89,10 +91,11 @@ const Expenses = () => {
             expenseTo: expenseTo,
             id: expense.id,
         })
-            .then(() => {
+            .then(async() => {
                 setNewExpenseAmount('');
                 setIsLoading(false);
-                setIsUpdateModalVisible(undefined)
+                setIsUpdateModalVisible(undefined);
+                await createLastTwelveMonth();
                 ToastAndroid.show('Expense has been updated', 500);
             })
             .catch((err) => {
@@ -107,7 +110,8 @@ const Expenses = () => {
 
     const deleteLossTransection = async (elem: ExpenditureInterface) => {
         await firestore().collection('transactions').doc(elem.id).delete()
-            .then(() => {
+            .then(async() => {
+                await createLastTwelveMonth();
                 ToastAndroid.show('loss has been deleted', 500);
 
             })
@@ -118,7 +122,10 @@ const Expenses = () => {
             })
     }
 
-    const expenseModalHandler = () => {
+    const expenseModalHandler = async(afterThen:any) => {
+        if(afterThen){
+            await createLastTwelveMonth();
+        }
         setShowModal(false);
     }
 
@@ -156,7 +163,7 @@ const Expenses = () => {
                                         <View>
                                             <Text style={[global_styles.textBlack, global_styles.textBold,]}>Expense Date: {expenseDate}</Text>
                                         </View>
-                                        <View style={{display: user.role == 'admin' ? 'flex' :'none', flexDirection: 'row', justifyContent: 'space-between', }}>
+                                        <View style={{ display: user.role == 'admin' ? 'flex' : 'none', flexDirection: 'row', justifyContent: 'space-between', }}>
                                             <Button
                                                 onPress={() => setIsUpdateModalVisible(elem)}
                                                 buttonStyle={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey', padding: 2 }}
@@ -257,7 +264,7 @@ const Expenses = () => {
                     </View>
                 </Modal>
             </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', padding: 20 }}>
+            <View style={{ display: user.role == 'admin' ? 'flex' : 'none', position: 'absolute', bottom: 0, padding: 5 }}>
                 <FAB
                     visible={true}
                     title="Add Expense"

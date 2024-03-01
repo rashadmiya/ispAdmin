@@ -1,5 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { ActivityIndicator, FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import {
+    ActivityIndicator, FlatList, Pressable, ScrollView,
+    StyleSheet, Text, TouchableOpacity, View, Alert
+} from 'react-native'
 import global_styles from '../utils/global_styles'
 import { ConstantColor } from '../utils/constant_color';
 import { UserInterface } from '../interfaces/user_interface';
@@ -8,17 +11,8 @@ import db from '../constants/database';
 import monthNameGenerator from '../helper-function/monthNameGenerator';
 import firestore from '@react-native-firebase/firestore';
 import Loader from '../utils/Loder';
-// Define the type of the monthlyTotals object
-interface MonthlyTotals {
-    [key: string]: {
-        invest: number;
-        income: number;
-        expense: number;
-        loan_to: number;
-        borrow: number;
-        loss: number;
-    };
-}
+import { todaysBalance, totallInvest, userInvest } from '../helper-function/calculateBalance';
+import Icon from '../utils/customIcons';
 
 interface AT {
     month: string,
@@ -42,6 +36,9 @@ const PartnersHome = ({ user }: { user: UserInterface }) => {
     const [monthlyTotals, setMonthlyTotals] = useState<MonthlyTotal[]>([]);
     const [activeMonth, setActiveMonth] = useState(0);
     const flatListRef = useRef<FlatList>(null);
+    const [parnerProfit, setPartnerProfit] = useState<number | undefined>(undefined);
+    const [parnerShare, setPartnerShare] = useState<number | undefined>(undefined);
+    const [incomeRate, setIncomeRate] = useState<number | undefined>(undefined);
 
 
     // useEffect(()=>{
@@ -53,6 +50,7 @@ const PartnersHome = ({ user }: { user: UserInterface }) => {
 
     useEffect(() => {
         // createLastTwelveMonth();
+        console.log("is run main useEffect on change another")
         const currentDate = new Date();
         const twelveMonthsAgo = new Date();
         twelveMonthsAgo.setMonth(currentDate.getMonth() - 12);
@@ -88,22 +86,22 @@ const PartnersHome = ({ user }: { user: UserInterface }) => {
                 const monthlyTotalIndex = updatedMonthlyTotals.findIndex((total) => total.month === monthYearKey);
                 switch (transactionData.type) {
                     case "invest":
-                        updatedMonthlyTotals[monthlyTotalIndex].data.invest += transactionData.amount;
+                        updatedMonthlyTotals[monthlyTotalIndex].data.invest += parseInt(transactionData.amount);
                         break;
                     case "income":
-                        updatedMonthlyTotals[monthlyTotalIndex].data.income += transactionData.amount;
+                        updatedMonthlyTotals[monthlyTotalIndex].data.income += parseInt(transactionData.amount);
                         break;
                     case "expense":
-                        updatedMonthlyTotals[monthlyTotalIndex].data.expense += transactionData.amount;
+                        updatedMonthlyTotals[monthlyTotalIndex].data.expense += parseInt(transactionData.amount);
                         break;
                     case "borrow":
-                        updatedMonthlyTotals[monthlyTotalIndex].data.borrow += transactionData.amount;
+                        updatedMonthlyTotals[monthlyTotalIndex].data.borrow += parseInt(transactionData.amount);
                         break;
                     case "loan_to":
-                        updatedMonthlyTotals[monthlyTotalIndex].data.loan_to += transactionData.amount;
+                        updatedMonthlyTotals[monthlyTotalIndex].data.loan_to += parseInt(transactionData.amount);
                         break;
                     case "loss":
-                        updatedMonthlyTotals[monthlyTotalIndex].data.loss += transactionData.amount;
+                        updatedMonthlyTotals[monthlyTotalIndex].data.loss += parseInt(transactionData.amount);
                         break;
                     // Add more cases as needed
                 }
@@ -115,12 +113,16 @@ const PartnersHome = ({ user }: { user: UserInterface }) => {
 
                 if (updatedMonthlyTotals.length > 1) setActiveMonth(updatedMonthlyTotals.length - 1);
             }
-          });
-      
-          // Unsubscribe from snapshot listener when component unmounts
-          return () => unsubscribe();
+        });
+
+        // Unsubscribe from snapshot listener when component unmounts
+        return () => unsubscribe();
 
     }, []);
+
+    useEffect(() => {
+        incomeRateFun();
+    }, [activeMonth])
 
     const scrollToIndex = (index: number) => {
         const wait = new Promise(resolve => setTimeout(resolve, 500));
@@ -213,26 +215,95 @@ const PartnersHome = ({ user }: { user: UserInterface }) => {
         });
     };
 
+    const showProfitFun = async () => {
+        // let balance = await todaysBalance(); // i have use revenueBalance for lowest api call, if problem occour i have to uncomment and use
+        // let totalInvest = await totallInvest();
+        // let partnerInvest = await userInvest(user.id);
+        // let partnerShar = (partnerInvest / totalInvest) * 100;
+        let revenueBalance = monthlyTotals[activeMonth]?.data?.income - (monthlyTotals[activeMonth]?.data.loss + monthlyTotals[activeMonth]?.data.expense);
+
+
+        if (revenueBalance) {
+            setPartnerProfit(Math.floor(revenueBalance));
+        } else {
+            Alert.alert('Cautions!', `your income less from your expenses`)
+        }
+
+    }
+
+    const incomeRateFun = async () => {
+        let revenueBalance = monthlyTotals[activeMonth]?.data?.income - (monthlyTotals[activeMonth]?.data.loss + monthlyTotals[activeMonth]?.data.expense);
+        // let profit = await todaysBalance();
+        let invest = await totallInvest();
+        // let incomeRates = (profit / invest) * 100;
+        let incomeRates = 100 * (revenueBalance / invest);
+
+        if (incomeRates) {
+            setIncomeRate(Math.round(incomeRates));
+        }
+    }
+
+    const partnerShareFun = async () => {
+        let totalInvest = await totallInvest();
+        let partnerInvest = await userInvest(user.id);
+        let partnerShar = (partnerInvest / totalInvest) * 100;
+        if (partnerShar) {
+            setPartnerShare(Math.floor(partnerShar));
+        }
+    }
+
+    const prevMonth = () => {
+        if (activeMonth > 0) {
+            setActiveMonth(activeMonth - 1);
+        }
+    }
+
+    const nextMonth = () => {
+        if (activeMonth < monthlyTotals.length - 1) {
+            setActiveMonth(activeMonth + 1);
+        }
+
+    }
 
     return (
-        <View style={global_styles.customContainer}>
+        <View style={[global_styles.customContainer, { flex: 1 }]}>
             {isLoading && <Loader />}
             <>
-                <View style={global_styles.sizedBoxTen}></View>
+                {/* <View style={global_styles.sizedBoxTen}></View>
                 <View style={[global_styles.headerWrapper, global_styles.shadow]}>
                     <Text
                         style={[global_styles.shadawText, global_styles.textBold, global_styles.textLarge, global_styles.textCenter, global_styles.paddingVerticalTen]}
                     >
                         {user.fullName} AC
                     </Text>
+                </View> */}
+                <View style={{ width: "100%", alignItems: 'center' }}>
+                    <TouchableOpacity onPress={() => {
+                        parnerShare ? null : partnerShareFun();
+                    }}
+                        style={{ width: '50%', backgroundColor: '#99EDC3', padding: 12, borderRadius: 50 }}>
+                        {parnerShare ? (
+                            <Text style={[global_styles.textCenter, global_styles.textMedium, global_styles.textBlack]}>{`Your Share: ${parnerShare} %`}</Text>
+                        ) : (
+                            <Text style={[global_styles.textCenter, global_styles.textMedium, global_styles.textBlack]}>Tab to see your share</Text>
+                        )}
+                    </TouchableOpacity>
                 </View>
 
                 <View style={global_styles.sizedBoxTen}></View>
-                <View style={global_styles.sizedBoxTen}></View>
 
-                <View style={{ ...global_styles.headerWrapper, backgroundColor: ConstantColor.secondary, padding: 12, borderRadius: 50 }}>
-                    <Text style={[global_styles.textCenter, global_styles.textMedium, global_styles.textWhite]}>Tab to see your profit</Text>
-                </View>
+
+                <TouchableOpacity onPress={() => {
+                    parnerProfit ? null : showProfitFun();
+                }}
+                    style={{ ...global_styles.headerWrapper, backgroundColor: "#99EDC3", padding: 12, borderRadius: 50 }}>
+                    {parnerProfit ? (
+                        <Text style={[global_styles.textCenter, global_styles.textMedium, global_styles.textBlack, global_styles.shadawText]}>{`Profit of  ${monthNameGenerator(monthlyTotals[monthlyTotals.length - 1].month)}: ${parnerProfit} ৳`}</Text>
+                    ) : (
+                        <Text style={[global_styles.textCenter, global_styles.textMedium, global_styles.textBlack, global_styles.shadawText]}>Tab to see profit</Text>
+                    )}
+                </TouchableOpacity>
+
                 <View style={global_styles.sizedBoxTen}></View>
 
                 <View style={{ ...global_styles.headerWrapper, padding: 8, borderRadius: 50 }}>
@@ -240,7 +311,7 @@ const PartnersHome = ({ user }: { user: UserInterface }) => {
                 </View>
                 <View style={global_styles.sizedBoxTen}></View>
 
-                <FlatList
+                {/* <FlatList
                     data={monthlyTotals}
                     renderItem={({ item, index }) => {
                         return (
@@ -248,34 +319,36 @@ const PartnersHome = ({ user }: { user: UserInterface }) => {
                                 onPress={() => {
                                     setActiveMonth(index);
                                 }}
-                                style={{ paddingVertical: 3, paddingHorizontal: 5, borderWidth: .3, backgroundColor: activeMonth == index ? ConstantColor.secondary : 'transparent' }}
+                                style={{ borderWidth: .3, backgroundColor: activeMonth == index ? ConstantColor.secondary : 'transparent', height: 35 }}
                             >
                                 <Text style={{ fontSize: 14, fontWeight: 'bold', color: activeMonth == index ? 'white' : 'black', padding: 5 }}>{monthNameGenerator(item.month)}</Text>
                             </Pressable>
                         )
                     }}
                     keyExtractor={(item, index) => index.toString()}
-                    inverted // To display items in reverse order
+                    // inverted // To display items in reverse order
                     horizontal={true}
                     scrollEnabled
                     showsHorizontalScrollIndicator={true}
                     indicatorStyle='black'
                     alwaysBounceHorizontal
-                    style={[global_styles.paddingVerticalTen]}
                     ref={flatListRef}
                     persistentScrollbar={true}
-                    // onScrollToIndexFailed={info => {
-                    //     const wait = new Promise(resolve => setTimeout(resolve, 500));
-                    //     wait.then(() => {
-                    //       flatListRef.current?.scrollToIndex({ index: info.index, animated: true });
-                    //     });
-                    //   }}
                     onScrollToIndexFailed={onScrollToIndexFailed}
-                />
-                <View style={global_styles.sizedBoxTen}></View>
+                /> */}
+
+                {monthlyTotals.length > 0 && (
+                    <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', }}>
+                            <Icon type='ant' name='doubleleft' size={25} color='black' style={styles.iconStyle} onPress={prevMonth} />
+                            <Text style={{ fontWeight: 'bold', color: 'black', paddingHorizontal: 20 }}>{monthNameGenerator(monthlyTotals[activeMonth]?.month)}</Text>
+                            <Icon type='ant' name='doubleright' size={25} color='black' style={styles.iconStyle} onPress={nextMonth} />
+                        </View>
+                    </View>
+                )}
 
                 <ScrollView
-                    style={{ backgroundColor: ConstantColor.white, opacity: 0.8, overflow: 'scroll', marginBottom: 150 }}
+                    style={{ backgroundColor: ConstantColor.white, opacity: 0.8, overflow: 'scroll', }}
                     indicatorStyle='black'
                 >
 
@@ -304,7 +377,14 @@ const PartnersHome = ({ user }: { user: UserInterface }) => {
 
                     )}
                 </ScrollView>
-                <View style={global_styles.sizedBoxTen}></View>
+
+                <View style={{ width: "100%", alignItems: 'center', }}>
+                    <View style={{ backgroundColor: ConstantColor.lightGray, paddingVertical: 5, paddingHorizontal: 10, borderWidth: 2, borderRadius: 20 }}>
+                        {incomeRate && (
+                            <Text style={[global_styles.textCenter, global_styles.textMedium, global_styles.textBlack]}>{`Income Rate: ${incomeRate} %`}</Text>
+                        )}
+                    </View>
+                </View>
             </>
         </View>
     )
@@ -312,4 +392,9 @@ const PartnersHome = ({ user }: { user: UserInterface }) => {
 
 export default PartnersHome
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+    iconStyle: {
+        paddingHorizontal: 10,
+        paddingVertical: 5
+    }
+})

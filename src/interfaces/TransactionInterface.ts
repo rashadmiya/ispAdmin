@@ -10,6 +10,7 @@ export type InvestInterface = {
     investmentDate: any,
     withdrawDate: any,
     id?:string,
+    investType:string
 }
 
 export type IncomeInterface = {

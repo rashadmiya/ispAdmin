@@ -29,6 +29,8 @@ const LoanTo = () => {
     const user = useSelector((state: any) => state.loggedInUser.value);
 
     const [isLoading, setIsLoading] = useState(false);
+    const [shouldLoadAgain, setShouldLoadAgain] = useState(false);
+
     const [showModal, setShowModal] = useState(false)
     const [isUpdateModalVisible, setIsUpdateModalVisible] = useState<LoanToInterface | undefined>(undefined);
     const [newLoanToAmount, setNewLoanToAmount] = React.useState('');
@@ -46,8 +48,8 @@ const LoanTo = () => {
     const [monthlyTotals, setMonthlyTotals] = useState<MonthlyTotal[]>([]);
 
     useEffect(() => {
-        createLastTwelveMonth()
-    }, []);
+        createLastTwelveMonth();
+    }, [shouldLoadAgain]);
 
 
 
@@ -58,7 +60,7 @@ const LoanTo = () => {
         const twelveMonthsAgo = new Date();
         twelveMonthsAgo.setMonth(currentDate.getMonth() - 12);
 
-        const lastTwelveMonthsQuery = transactionsRef.where('type', '==', 'LoanTo').where('createdAt', '>=', twelveMonthsAgo).where('createdAt', '<=', currentDate);
+        const lastTwelveMonthsQuery = transactionsRef.where('type', '==', 'loan_to').where('createdAt', '>=', twelveMonthsAgo).where('createdAt', '<=', currentDate);
 
         await lastTwelveMonthsQuery.get().then((querySnapshot: any) => {
             const updatedMonthlyTotals: MonthlyTotal[] = [];
@@ -105,6 +107,7 @@ const LoanTo = () => {
                 setIsLoading(false);
                 setIsUpdateModalVisible(undefined)
                 ToastAndroid.show('loan has been updated', 500);
+                setShouldLoadAgain(true);
             })
             .catch((err) => {
                 console.log(`error in update user=>${loan.id}:`, err.message);
@@ -120,7 +123,7 @@ const LoanTo = () => {
         await firestore().collection('transactions').doc(elem.id).delete()
             .then(() => {
                 ToastAndroid.show('loan has been deleted', 500);
-
+                setShouldLoadAgain(true);
             })
             .catch((err) => {
                 Alert.alert('Warning!', `Error occour while delete loan To=>${elem.id}, Please try again`, [
@@ -142,7 +145,10 @@ const LoanTo = () => {
         setIsDateTaken({ lendDate: isDateTaken.lendDate, repaymentDate: true });
     }
 
-    const loanToModalHandler = () => {
+    const loanToModalHandler = (afterThen:any) => {
+        if(afterThen){
+            shouldLoadAgain ? setShouldLoadAgain(false) : setShouldLoadAgain(true);
+        }
         setShowModal(false);
     }
 
@@ -187,7 +193,7 @@ const LoanTo = () => {
                                                 ))}
                                             </View>
                                         </View>
-                                        <View style={{ display: user.role == 'admin' ? 'flex' :'none', flexDirection: 'row', justifyContent: 'space-between', }}>
+                                        <View style={{ display: user.role == 'admin' ? 'flex' : 'none', flexDirection: 'row', justifyContent: 'space-between', }}>
                                             <Button
                                                 onPress={() => setIsUpdateModalVisible(elem)}
                                                 buttonStyle={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey', padding: 2 }}
@@ -251,7 +257,7 @@ const LoanTo = () => {
                                 <Text style={[global_styles.textMedium, global_styles.shadawText]}>{`Update ${isUpdateModalVisible?.borrower}'s loan`}</Text>
                                 <View style={global_styles.sizedBoxTen}></View>
 
-                                
+
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
                                     <View style={{ width: '60%' }}>
                                         <TextInput
@@ -351,7 +357,7 @@ const LoanTo = () => {
                     </View>
                 </Modal>
             </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', padding: 20 }}>
+            <View style={{ display: user.role == 'admin' ? 'flex' : 'none',position:'absolute', bottom:0, padding: 5 }}>
                 <FAB
                     visible={true}
                     title="Add Loan To"

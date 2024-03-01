@@ -2,7 +2,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ItemDetails from '../screens/ItemDetails';
 import ListItem from '../screens/ListItem';
-import { BORROWERS, EXPENSES, FUNDTRANSFER, HOME, INCOME, INVESTMENTS, ITEMDETAILS, ITEMLIST, LOANTO, LOSSES, USERMANAGER } from '../utils/constant_route';
+import { BORROWERS, EXPENSES, FUNDTRANSFER, HOME, INCOME, INVESTMENTS, ITEMDETAILS, ITEMLIST, LOANTO, LOSSES, NOTICES, PROJECTS, PROPOSALS, USERMANAGER } from '../utils/constant_route';
 import Header from './Header';
 import HeaderLeft from './HeaderLeft';
 import Home from '../screens/Home';
@@ -14,6 +14,9 @@ import Expenses from '../screens/Expenses';
 import Income from '../screens/Income';
 import LoanTo from '../screens/LoanTo';
 import FundTransfers from '../screens/FundTransfers';
+import Notices from '../screens/Notices';
+import Proposals from '../screens/Proposals';
+import Projects from '../screens/Projects';
 
 const Stack_Navigator = () => {
   const stack = createNativeStackNavigator();
@@ -41,6 +44,9 @@ const Stack_Navigator = () => {
       <stack.Screen name={INCOME} component={Income} options={Header} />
       <stack.Screen name={LOANTO} component={LoanTo} options={Header} />
       <stack.Screen name={FUNDTRANSFER} component={FundTransfers} options={Header} />
+      <stack.Screen name={NOTICES} component={Notices} options={Header} />
+      <stack.Screen name={PROPOSALS} component={Proposals} options={Header} />
+      <stack.Screen name={PROJECTS} component={Projects} options={Header} />
     </stack.Navigator>
     // </NavigationContainer>
   )
