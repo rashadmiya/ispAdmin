@@ -19,7 +19,7 @@ import Icon from '../utils/customIcons';
 import global_styles from '../utils/global_styles';
 
 const LossModal = ({ openedItem, isModalVisible, modalHide, }:
-    { openedItem: any, isModalVisible: boolean, modalHide: (afterThen?:any) => void,  }) => {
+    { openedItem: any, isModalVisible: boolean, modalHide: (afterThen?: any) => void, }) => {
     const reduxLossConstant = useSelector((state: any) => state.lossConstant.value);
 
     const [losser, setLosser] = useState<UserInterface | undefined>(undefined);
@@ -29,7 +29,7 @@ const LossModal = ({ openedItem, isModalVisible, modalHide, }:
     const [date, setDate] = useState(new Date(),);
     const [isDateTaken, setIsDateTaken] = useState(false);
     const [isNewLoss, setIsNewLoss] = useState(false);
-
+    const [ref, setRef] = useState('');
 
     const minimumDateFinder = () => {
         const today = new Date();
@@ -53,15 +53,16 @@ const LossModal = ({ openedItem, isModalVisible, modalHide, }:
                 amount: parseInt(lossAmount),
                 createdAt: firestore.FieldValue.serverTimestamp(),
                 dateOfLoss: date,
+                reference:ref
             }
-             firestore().collection('transactions').doc().set(createTranssction)
+            firestore().collection('transactions').doc().set(createTranssction)
                 .then(async () => {
-                    let afterThen= true;
+                    let afterThen = true;
                     modalHide(afterThen);
                     setLossAmount('');
                     setLossBy('');
-                    
-                    ToastAndroid.show('Income Updated Successfully!', ToastAndroid.SHORT);
+
+                    ToastAndroid.show('Loss Created Successfully!', ToastAndroid.SHORT);
                 })
                 .catch((error: any) => console.log(error));
 
@@ -71,7 +72,7 @@ const LossModal = ({ openedItem, isModalVisible, modalHide, }:
         return Alert.alert('Alert', 'Please Enter valid name and amount')
     }
 
-    
+
 
     return (
         // <View style={{ flex: 1 }}>
@@ -91,7 +92,7 @@ const LossModal = ({ openedItem, isModalVisible, modalHide, }:
         >
             <View style={{ minHeight: 300, backgroundColor: ConstantColor.lightGray, borderRadius: 10, padding: 10, }}>
                 <View>
-                    <Text style={[global_styles.modalHeader,]}>{openedItem}</Text>
+                    <Text style={[global_styles.modalHeader, { textTransform: 'capitalize' }]}>{openedItem}</Text>
                     <View style={global_styles.greyLine} />
                 </View>
 
@@ -107,7 +108,7 @@ const LossModal = ({ openedItem, isModalVisible, modalHide, }:
                                 {/* {selectInvestOption == 2 && <Text></Text>} */}
                                 <TextInput
                                     placeholderTextColor="#000"
-                                    placeholder="Losses Amount"
+                                    placeholder="Loss Amount"
                                     onChangeText={(text) => setLossAmount(text)}
                                     value={lossAmount}
                                     autoCapitalize="none"
@@ -128,7 +129,6 @@ const LossModal = ({ openedItem, isModalVisible, modalHide, }:
                                                 value={lossBy}
                                                 autoCapitalize="none"
                                                 style={styles.text_input}
-                                                keyboardType='number-pad'
                                             /></>
                                     ) : (
                                         <>
@@ -144,13 +144,24 @@ const LossModal = ({ openedItem, isModalVisible, modalHide, }:
                                                 save="value"
                                                 dropdownStyles={{ backgroundColor: '#fff' }}
                                                 placeholder='Loss Sector'
-                                                boxStyles={{padding:0, height:40, margin:0}}
-                                                inputStyles={{height:30,}}
-                                                dropdownTextStyles={{color:'black'}}
+                                                boxStyles={{ padding: 0, height: 40, margin: 0,}}
+                                                inputStyles={{ height: 30, color:'black' }}
+                                                dropdownTextStyles={{ color: 'black' }}
+
                                             /></>
                                     )}
                                 </View>
 
+                                <TextInput
+                                    placeholderTextColor="#000"
+                                    placeholder="Loss Ref"
+                                    onChangeText={(text) => setRef(text)}
+                                    value={ref}
+                                    autoCapitalize="none"
+                                    style={[styles.text_input,{marginTop:50}]}
+                                />
+
+                                <View style={global_styles.sizedBoxTen}></View>
                             </View>
 
                             <View style={{ width: '40%', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>

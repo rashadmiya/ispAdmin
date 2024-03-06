@@ -19,6 +19,7 @@ const LoanToModal = ({ openedItem, isModalVisible, modalHide, }:
     { openedItem: any, isModalVisible: boolean, modalHide: (afterThen?:any) => void,  }) => {
     const [borrower, setBorrower] = useState<UserInterface | undefined>(undefined);
     const [lendAmount, setLendAmount] = useState('');
+    const [ref, setRef] = useState('');
     const [condition, setCondition] = useState('');
     const [tempWitnes, setTempWithnes] = useState('');
     const [witnes, setWitnes] = useState<string[]>([]);
@@ -27,7 +28,7 @@ const LoanToModal = ({ openedItem, isModalVisible, modalHide, }:
     const [showLendDate, setShowLendDate] = useState(Platform.OS === 'ios');
     const [showRepaymentDate, setShowRepaymentDate] = useState(Platform.OS === 'ios');
     const [dimenstion, setDimention] = useState(Dimensions.get('window'));
-    const [modalMaxHeight, setModalMaxheight] = useState(dimenstion.height * .45);
+    const [modalMaxHeight, setModalMaxheight] = useState(dimenstion.height * .50);
     const [date, setDate] = useState({
         lendDate: new Date(),
         repaymentDate: new Date(),
@@ -42,7 +43,7 @@ const LoanToModal = ({ openedItem, isModalVisible, modalHide, }:
         if (query) {
             let filteredNames = employes.filter((e: any) => {
                 return Object.values(e).some((value: any) => {
-                    return value.toString().toLowerCase().includes(query);
+                    return value.toString().toLowerCase().includes(query.toLowerCase());
                 });
             });
             setFilteredEmployes(filteredNames);
@@ -89,14 +90,15 @@ const LoanToModal = ({ openedItem, isModalVisible, modalHide, }:
         if (tempWitnes !== '') {
             setWitnes((prev: any) => [...prev, tempWitnes]);
             setTempWithnes('');
-            if (witnes.length > 0) {
-                setModalMaxheight(dimenstion.height * .5);
-            }
-            if (witnes.length > 1) {
-                setModalMaxheight(dimenstion.height * .6);
+
+            if (witnes.length <= 1) {
+               return setModalMaxheight(dimenstion.height * .55);
             }
             if (witnes.length > 2) {
-                setModalMaxheight(dimenstion.height * .7);
+                return setModalMaxheight(dimenstion.height * .65);
+            }
+            if (witnes.length > 1) {
+               return setModalMaxheight(dimenstion.height * .6);
             }
         }
     }
@@ -114,14 +116,16 @@ const LoanToModal = ({ openedItem, isModalVisible, modalHide, }:
                 repaymentDate: isDateTaken.repaymentDate ? date.repaymentDate : null,
                 conditions: condition,
                 witness: witnes,
+                reference:ref,
             }
             await firestore().collection('transactions').doc().set(createTranssction)
                 .then(() => {
                     let afterThen = true;
                     modalHide(afterThen);
                     setLendAmount('');
+                    setWitnes([]);
                     setBorrower(undefined);
-                    ToastAndroid.show('Borrows Update Successfull!', ToastAndroid.SHORT);
+                    ToastAndroid.show('Borrows Created Successfull!', ToastAndroid.SHORT);
                 })
                 .catch((error: any) => console.log(error));
 
@@ -138,7 +142,11 @@ const LoanToModal = ({ openedItem, isModalVisible, modalHide, }:
             onSwipeComplete={modalHide}
             swipeDirection="up"
             customBackdrop={
-                <TouchableWithoutFeedback onPress={modalHide}>
+                <TouchableWithoutFeedback onPress={()=>{
+                    modalHide();
+                    setWitnes([]);
+                    setModalMaxheight(dimenstion.height * .45);
+                }}>
                     <View style={{ flex: 1, backgroundColor: 'black', }} />
                 </TouchableWithoutFeedback>
             }
@@ -189,7 +197,10 @@ const LoanToModal = ({ openedItem, isModalVisible, modalHide, }:
                                         placeholderTextColor="#000"
                                         inputContainerStyle={{ paddingHorizontal: 8, }}
                                         selectionColor={'#000'}
+                                        style={{color:'black'}}
                                         onChangeText={(text) => findingUser(text)}
+                                        listContainerStyle={{zIndex:999}}
+                                        containerStyle={{zIndex:99999}}
                                         flatListProps={{
                                             keyExtractor: (item: any) => item.id,
                                             renderItem: ({ item, index }) => (
@@ -199,13 +210,22 @@ const LoanToModal = ({ openedItem, isModalVisible, modalHide, }:
                                                         setFilteredEmployes([])
                                                     }}
                                                 >
-                                                    <Text>{item.fullName}</Text>
+                                                    <Text style={{color:'black', padding:5}}>{item.fullName}</Text>
                                                 </Pressable>
                                             ),
                                         }}
                                     />
                                 </View>
+                                <TextInput
+                                    placeholderTextColor="#000"
+                                    placeholder="Loan Ref"
+                                    onChangeText={(text) => setRef(text)}
+                                    value={ref}
+                                    autoCapitalize="none"
+                                    style={[styles.text_input,{marginTop:50}]}
+                                />
 
+                                <View style={global_styles.sizedBoxTen}></View>
                             </View>
 
                             <View style={{ width: '40%', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
@@ -345,7 +365,7 @@ const LoanToModal = ({ openedItem, isModalVisible, modalHide, }:
                                 </TouchableOpacity>
                             </View>
                         </View>
-                        <View style={{ marginTop: 30 }}>
+                        <View style={{ marginTop: 10 }}>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-around', }}>
                                 <View style={{ width: '60%' }}>
                                     {/* {selectInvestOption == 2 && <Text></Text>} */}
@@ -385,10 +405,10 @@ const LoanToModal = ({ openedItem, isModalVisible, modalHide, }:
                                 <View>
                                     <Button
                                         onPress={() => confirmWitness()}
-                                        buttonStyle={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey' }}
+                                        buttonStyle={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 1, borderColor: 'grey' }}
                                     >
                                         <Text style={{ color: 'black', fontWeight: '800', fontSize: 14, paddingHorizontal: 1 }}>
-                                            Confirm witness
+                                            Confirm
                                         </Text>
                                     </Button>
                                 </View>

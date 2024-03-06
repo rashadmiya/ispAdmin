@@ -25,7 +25,7 @@ const IncomeModal = ({ openedItem, isModalVisible, modalHide }:
     { openedItem: any, isModalVisible: boolean, modalHide: (afterThen?:any) => void }) => {
 
     const reduxLossConstant = useSelector((state: any) => state.lossConstant.value);
-    const [earner, setEarner] = useState<IInterface | undefined>(undefined);
+    const [ref, setRef] = useState('');
     const [incomeSector, setIncomeSector] = useState('');
     const [earnAmount, setEarnAmount] = useState('');
     const [showEarnDate, setShowEarnDate] = useState(Platform.OS === 'ios');
@@ -57,6 +57,7 @@ const IncomeModal = ({ openedItem, isModalVisible, modalHide }:
                 amount: parseInt(earnAmount),
                 createdAt: firestore.FieldValue.serverTimestamp(),
                 incomeDate: date,
+                reference:ref
             }
             await firestore().collection('transactions').doc().set(createTranssction)
                 .then(() => {
@@ -64,7 +65,7 @@ const IncomeModal = ({ openedItem, isModalVisible, modalHide }:
                     modalHide(afterThen);
                     setEarnAmount('');
                     setIncomeSector('');
-                    ToastAndroid.show('Income Updated Successfully!', ToastAndroid.SHORT);
+                    ToastAndroid.show('Income Added Successfully!', ToastAndroid.SHORT);
                 })
                 .catch((error: any) => console.log(error));
 
@@ -97,7 +98,7 @@ const IncomeModal = ({ openedItem, isModalVisible, modalHide }:
         >
             <View style={{ minHeight: 300, backgroundColor: ConstantColor.lightGray, borderRadius: 10, padding: 10, }}>
                 <View>
-                    <Text style={[global_styles.modalHeader,]}>{openedItem}</Text>
+                    <Text style={[global_styles.modalHeader,{textTransform:'capitalize'}]}>{openedItem}</Text>
                     <View style={global_styles.greyLine} />
                 </View>
 
@@ -134,7 +135,6 @@ const IncomeModal = ({ openedItem, isModalVisible, modalHide }:
                                                 value={incomeSector}
                                                 autoCapitalize="none"
                                                 style={styles.text_input}
-                                                keyboardType='number-pad'
                                             /></>
                                     ) : (
                                         <>
@@ -156,6 +156,17 @@ const IncomeModal = ({ openedItem, isModalVisible, modalHide }:
                                             /></>
                                     )}
                                 </View>
+
+                                <TextInput
+                                    placeholderTextColor="#000"
+                                    placeholder="income Ref"
+                                    onChangeText={(text) => setRef(text)}
+                                    value={ref}
+                                    autoCapitalize="none"
+                                    style={[styles.text_input,{marginTop:50}]}
+                                />
+
+                                <View style={global_styles.sizedBoxTen}></View>
                             </View>
 
                             <View style={{ width: '40%', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>

@@ -13,7 +13,7 @@ import Animated, {
 import Chevron from './Chevron';
 import NestedAccordion from './Accordion_nested';
 import { useNavigation } from '@react-navigation/native';
-import { INVESTMENTS, LOANTO, NOTICES, PROJECTS, PROPOSALS, USERMANAGER } from '../../utils/constant_route';
+import { FUNDTRANSFER, INVESTMENTS, LOANTO, NOTICES, PROJECTS, PROPOSALS, USERMANAGER } from '../../utils/constant_route';
 import { useSelector } from 'react-redux';
 import { UserInterface } from '../../interfaces/user_interface';
 
@@ -63,7 +63,7 @@ const Accordion = ({ value, type }: Props) => {
                                 return navigation.navigate(INVESTMENTS);
                                 break;
                             case 'Fund Manager':
-                                // return navigation.navigate(INVESTMENTS);
+                                return navigation.navigate(FUNDTRANSFER);
                                 break;
                             case 'Persons':
                                 return navigation.navigate(USERMANAGER);

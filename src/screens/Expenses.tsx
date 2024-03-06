@@ -49,7 +49,7 @@ const Expenses = () => {
         twelveMonthsAgo.setMonth(currentDate.getMonth() - 12);
 
         const lastTwelveMonthsQuery = transactionsRef.where('type', '==', 'expense').where('createdAt', '>=', twelveMonthsAgo)
-        .where('createdAt', '<=', currentDate).orderBy('createdAt', 'desc');
+            .where('createdAt', '<=', currentDate).orderBy('createdAt', 'desc');
 
         await lastTwelveMonthsQuery.get().then((querySnapshot: any) => {
             const updatedMonthlyTotals: MonthlyTotal[] = [];
@@ -91,7 +91,7 @@ const Expenses = () => {
             expenseTo: expenseTo,
             id: expense.id,
         })
-            .then(async() => {
+            .then(async () => {
                 setNewExpenseAmount('');
                 setIsLoading(false);
                 setIsUpdateModalVisible(undefined);
@@ -110,7 +110,7 @@ const Expenses = () => {
 
     const deleteLossTransection = async (elem: ExpenditureInterface) => {
         await firestore().collection('transactions').doc(elem.id).delete()
-            .then(async() => {
+            .then(async () => {
                 await createLastTwelveMonth();
                 ToastAndroid.show('loss has been deleted', 500);
 
@@ -122,8 +122,8 @@ const Expenses = () => {
             })
     }
 
-    const expenseModalHandler = async(afterThen:any) => {
-        if(afterThen){
+    const expenseModalHandler = async (afterThen: any) => {
+        if (afterThen) {
             await createLastTwelveMonth();
         }
         setShowModal(false);
@@ -152,17 +152,8 @@ const Expenses = () => {
                             let expenseDate = elem.expenseDate.toDate().toDateString();
                             return (
                                 <View style={global_styles.borderBox} key={index}>
-                                    <View style={global_styles.justifyBetweenCenter}>
-                                        <Text style={[{ width: '50%', color: 'black', fontSize: 16, fontWeight: 'bold', textAlign: 'left' }]}>Expense To: {elem.expenseTo}</Text>
-                                        <Text style={[{ width: '50%', color: 'black', fontSize: 16, fontWeight: 'bold', textAlign: 'right' }]}>Amount: {elem.amount}৳</Text>
-                                    </View>
-                                    <View style={global_styles.sizedBoxTen}></View>
-
-
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5 }}>
-                                        <View>
-                                            <Text style={[global_styles.textBlack, global_styles.textBold,]}>Expense Date: {expenseDate}</Text>
-                                        </View>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                        <Text style={[{ width: '60%', color: 'black', fontSize: 16, fontWeight: 'bold', textAlign: 'left' }]}>Expense To: {elem.expenseTo}</Text>
                                         <View style={{ display: user.role == 'admin' ? 'flex' : 'none', flexDirection: 'row', justifyContent: 'space-between', }}>
                                             <Button
                                                 onPress={() => setIsUpdateModalVisible(elem)}
@@ -191,6 +182,15 @@ const Expenses = () => {
                                                 </Text>
                                             </Button>
                                         </View>
+                                    </View>
+
+
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5 }}>
+                                        <View>
+                                            <Text style={[global_styles.textBlack, global_styles.textBold,]}>Expense Date: {expenseDate}</Text>
+                                            <Text style={[{ color: 'black',  fontWeight: 'bold', }]}>Ref Msg: {elem?.ref || 'No Message'}</Text>
+                                        </View>
+                                        <Text style={[{ color: 'black', fontSize: 16, fontWeight: 'bold', textAlign: 'right' }]}>Amount: {elem.amount}৳</Text>
                                     </View>
                                 </View>
                             )
@@ -245,7 +245,7 @@ const Expenses = () => {
                                     dropdownStyles={{ backgroundColor: '#fff' }}
                                     placeholder='Change Loss Sector'
                                     boxStyles={{ padding: 0, height: 40, margin: 0 }}
-                                    inputStyles={{ height: 30, }}
+                                    inputStyles={{ height: 30, color: 'black' }}
                                     dropdownTextStyles={{ color: 'black' }}
                                 />
                                 <Text></Text>

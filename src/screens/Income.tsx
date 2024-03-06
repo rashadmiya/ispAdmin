@@ -45,7 +45,7 @@ const Income = () => {
         twelveMonthsAgo.setMonth(currentDate.getMonth() - 12);
 
         const lastTwelveMonthsQuery = transactionsRef.where('type', '==', 'income')
-        .where('createdAt', '>=', twelveMonthsAgo).where('createdAt', '<=', currentDate).orderBy('createdAt', 'desc');
+            .where('createdAt', '>=', twelveMonthsAgo).where('createdAt', '<=', currentDate).orderBy('createdAt', 'desc');
 
         await lastTwelveMonthsQuery.get().then((querySnapshot: any) => {
             const updatedMonthlyTotals: MonthlyTotal[] = [];
@@ -82,7 +82,7 @@ const Income = () => {
             incomeFrom: incomeFrom,
             id: income.id,
         })
-            .then(async() => {
+            .then(async () => {
                 setNewIncomeAmount('');
                 setIsLoading(false);
                 await createLastTwelveMonth();
@@ -101,7 +101,7 @@ const Income = () => {
 
     const deleteIncomeTransaction = async (elem: IncomeInterface) => {
         await firestore().collection('transactions').doc(elem.id).delete()
-            .then(async() => {
+            .then(async () => {
                 await createLastTwelveMonth();
                 ToastAndroid.show('loss has been deleted', 500);
 
@@ -113,8 +113,8 @@ const Income = () => {
             })
     }
 
-    const incomeModalHandler = async(afterThen:any) => {
-        if(afterThen){
+    const incomeModalHandler = async (afterThen: any) => {
+        if (afterThen) {
             await createLastTwelveMonth()
         }
         setShowModal(false);
@@ -145,18 +145,8 @@ const Income = () => {
                             return (
                                 <View style={global_styles.borderBox} key={index}>
                                     <View style={global_styles.justifyBetweenCenter}>
-                                        <Text style={[{ width: '50%', color: 'black', fontSize: 16, fontWeight: 'bold', textAlign: 'left' }]}>Income From: {elem.incomeFrom}</Text>
-                                        <Text style={[{ width: '50%', color: 'black', fontSize: 16, fontWeight: 'bold', textAlign: 'right' }]}>Amount: {elem.amount}৳</Text>
-                                    </View>
-                                    <View style={global_styles.sizedBoxTen}></View>
-
-
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5 }}>
-                                        <View>
-                                            <Text style={[global_styles.textBlack, global_styles.textBold,]}>Income Date: {incomeDate}</Text>
-                                        </View>
-
-                                        <View style={{ display: loggedInUser.role == 'admin' ? 'flex' : 'none', flexDirection: 'row', justifyContent: 'space-between', }}>
+                                        <Text style={[{ width: '60%', color: 'black', fontSize: 16, fontWeight: 'bold', textAlign: 'left' }]}>Earn From: {elem.incomeFrom}</Text>
+                                        <View style={{ display: loggedInUser.role == 'admin' ? 'flex' : 'none', flexDirection: 'row', justifyContent: 'space-between', width: 140 }}>
                                             <Button
                                                 onPress={() => setIsUpdateModalVisible(elem)}
                                                 buttonStyle={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey', padding: 2 }}
@@ -184,6 +174,17 @@ const Income = () => {
                                                 </Text>
                                             </Button>
                                         </View>
+                                    </View>
+
+
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5 }}>
+                                        <View>
+                                            <Text style={[global_styles.textBlack, global_styles.textBold,]}>Income Date: {incomeDate}</Text>
+                                            <Text style={[{ color: 'black', fontWeight: 'bold' }]}>Ref Msg: {elem?.ref || 'No Message'}</Text>
+                                        </View>
+
+                                        <Text style={[{ color: 'black', fontSize: 16, fontWeight: 'bold', textAlign: 'right' }]}>Amount: {elem.amount}৳</Text>
+
 
                                     </View>
                                 </View>
@@ -238,7 +239,7 @@ const Income = () => {
                                     dropdownStyles={{ backgroundColor: '#fff' }}
                                     placeholder='Change Loss Sector'
                                     boxStyles={{ padding: 0, height: 40, margin: 0 }}
-                                    inputStyles={{ height: 30, }}
+                                    inputStyles={{ height: 30, color: 'black' }}
                                     dropdownTextStyles={{ color: 'black' }}
                                 />
                                 <Text></Text>
@@ -257,7 +258,7 @@ const Income = () => {
                     </View>
                 </Modal>
             </View>
-            <View style={{ display: loggedInUser.role == 'admin' ? 'flex' : 'none', position: 'absolute', bottom: 0, padding: 5}}>
+            <View style={{ display: loggedInUser.role == 'admin' ? 'flex' : 'none', position: 'absolute', bottom: 0, padding: 5 }}>
                 <FAB
                     visible={true}
                     title="Add Income"

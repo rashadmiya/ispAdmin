@@ -1,20 +1,21 @@
-import React, { FC, useEffect, useState } from 'react';
-import {
-    Alert, Dimensions, Pressable, TextInput, ToastAndroid, TouchableOpacity,
-    TouchableWithoutFeedback, Platform
-} from 'react-native';
-import { StyleSheet, Text, View } from 'react-native';
-import Modal from 'react-native-modal';
-import global_styles from '../utils/global_styles';
-import { ConstantColor } from '../utils/constant_color';
-import AutocompleteInput from 'react-native-autocomplete-input';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import firestore from '@react-native-firebase/firestore';
-import { ExpenditureInterface } from '../interfaces/TransactionInterface';
-import { UserInterface } from '../interfaces/user_interface';
-import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
-import Icon from '../utils/customIcons';
+import React, { useState } from 'react';
+import {
+    Alert, Dimensions,
+    Platform,
+    StyleSheet, Text,
+    TextInput, ToastAndroid, TouchableOpacity,
+    TouchableWithoutFeedback,
+    View
+} from 'react-native';
 import { SelectList } from 'react-native-dropdown-select-list';
+import Modal from 'react-native-modal';
 import { useSelector } from 'react-redux';
+import { ExpenditureInterface } from '../interfaces/TransactionInterface';
+import { ConstantColor } from '../utils/constant_color';
+import Icon from '../utils/customIcons';
+import global_styles from '../utils/global_styles';
 
 interface EInterface {
     name: string;
@@ -30,7 +31,7 @@ const ExpenseModal = ({ openedItem, isModalVisible, modalHide }:
     const [date, setDate] = useState(new Date(),);
     const [isDateTaken, setIsDateTaken] = useState(false);
     const [isNewExpense, setIsNewExpense] = useState(false);
-
+    const [ref, setRef] = useState('');
 
     const minimumDateFinder = () => {
         const today = new Date();
@@ -50,13 +51,12 @@ const ExpenseModal = ({ openedItem, isModalVisible, modalHide }:
     const deployInvest = async () => {
         if (expenseTo && expenseAmount) {
             const createTranssction: ExpenditureInterface = {
-                // partner_name: spendthrift.fullName,
-                // partner_id: spendthrift.id,
                 expenseTo: expenseTo,
                 type: 'expense',
                 amount: parseInt(expenseAmount),
                 createdAt: firestore.FieldValue.serverTimestamp(),
                 expenseDate: date,
+                reference:ref,
             }
             await firestore().collection('transactions').doc().set(createTranssction)
                 .then(() => {
@@ -64,7 +64,7 @@ const ExpenseModal = ({ openedItem, isModalVisible, modalHide }:
                     modalHide(afterThen);
                     setExpenseAmount('');
                     setExpenseTo('');
-                    ToastAndroid.show('Expense Updated Successfully!', ToastAndroid.SHORT);
+                    ToastAndroid.show('Expense Added Successfully!', ToastAndroid.SHORT);
                 })
                 .catch((error: any) => console.log(error));
 
@@ -97,7 +97,7 @@ const ExpenseModal = ({ openedItem, isModalVisible, modalHide }:
         >
             <View style={{ minHeight: 300, backgroundColor: ConstantColor.lightGray, borderRadius: 10, padding: 10, }}>
                 <View>
-                    <Text style={[global_styles.modalHeader,]}>{openedItem}</Text>
+                    <Text style={[global_styles.modalHeader,{textTransform:'capitalize'}]}>{openedItem}</Text>
                     <View style={global_styles.greyLine} />
                 </View>
 
@@ -134,7 +134,6 @@ const ExpenseModal = ({ openedItem, isModalVisible, modalHide }:
                                                 value={expenseTo}
                                                 autoCapitalize="none"
                                                 style={styles.text_input}
-                                                keyboardType='number-pad'
                                             /></>
                                     ) : (
                                         <>
@@ -151,11 +150,22 @@ const ExpenseModal = ({ openedItem, isModalVisible, modalHide }:
                                                 dropdownStyles={{ backgroundColor: '#fff' }}
                                                 placeholder='Expense Sector'
                                                 boxStyles={{ padding: 0, height: 40, margin: 0 }}
-                                                inputStyles={{ height: 30, }}
+                                                inputStyles={{ height: 30, color:'black'}}
                                                 dropdownTextStyles={{ color: 'black' }}
                                             /></>
                                     )}
                                 </View>
+
+                                <TextInput
+                                    placeholderTextColor="#000"
+                                    placeholder="Expense Ref"
+                                    onChangeText={(text) => setRef(text)}
+                                    value={ref}
+                                    autoCapitalize="none"
+                                    style={[styles.text_input,{marginTop:50}]}
+                                />
+
+                                <View style={global_styles.sizedBoxTen}></View>
 
                             </View>
 

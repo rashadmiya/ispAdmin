@@ -1,18 +1,16 @@
-import React, { useEffect, useState } from 'react'
-import { SafeAreaView, ScrollView, StyleSheet, Text, ToastAndroid, TouchableOpacity, TouchableWithoutFeedback, View, } from 'react-native'
-import global_styles from '../utils/global_styles'
-import { ConstantColor } from '../utils/constant_color'
 import firestore from '@react-native-firebase/firestore';
-import { SelectList } from 'react-native-dropdown-select-list'
+import { Button, FAB } from '@rneui/base';
+import React, { useEffect, useState } from 'react';
+import { SafeAreaView, ScrollView, StyleSheet, Text, ToastAndroid, TouchableOpacity, TouchableWithoutFeedback, View, } from 'react-native';
+import { SelectList } from 'react-native-dropdown-select-list';
 import Modal from 'react-native-modal';
 import { UserInterface } from '../interfaces/user_interface';
-import Loader from '../utils/Loder';
-import ItemContainerComp from '../components/ItemContainerComp';
-import db from '../constants/database';
-import { FAB, Button } from '@rneui/base';
 import BorrowModal from '../modals/BorrowModal';
+import Loader from '../utils/Loder';
+import { ConstantColor } from '../utils/constant_color';
+import global_styles from '../utils/global_styles';
 
-interface MonthlyTotal {
+interface FundTransfer {
     amount: number;
     createdAT: any;
     partner_id: string;
@@ -27,22 +25,21 @@ const data = [
 ];
 
 const FundTransfers = () => {
-    const [employes, setEmployes] = useState([]);
     const [userRole, setUserRole] = React.useState('');
     const [isModalVisible, setIsmodalVisible] = useState<UserInterface | undefined>(undefined);
     const [isLoading, setIsLoading] = useState(false);
     const [showModal, setShowModal] = useState(false)
-
-
-
-    const [monthlyTotals, setMonthlyTotals] = useState<MonthlyTotal[]>([]);
+    const [fundTransfers, setFundTransfers] = useState<FundTransfer[]>([]);
 
     useEffect(() => {
         // fetchData();
-        createLastTwelveMonth()
+        createLastTwelveMonth();
+        return () => {
+            setIsLoading(false);
+        };
     }, []);
 
-    
+
 
     const createLastTwelveMonth = async () => {
         setIsLoading(true)
@@ -51,10 +48,10 @@ const FundTransfers = () => {
         const twelveMonthsAgo = new Date();
         twelveMonthsAgo.setMonth(currentDate.getMonth() - 12);
 
-        const lastTwelveMonthsQuery = transactionsRef.where('type', '==', 'loss').where('createdAt', '>=', twelveMonthsAgo).where('createdAt', '<=', currentDate);
+        const lastTwelveMonthsQuery = transactionsRef.where('type', '==', 'fund_transfer').where('createdAt', '>=', twelveMonthsAgo).where('createdAt', '<=', currentDate);
 
         await lastTwelveMonthsQuery.get().then((querySnapshot: any) => {
-            const updatedMonthlyTotals: MonthlyTotal[] = [];
+            const updatedfundTransfers: FundTransfer[] = [];
 
             querySnapshot.forEach((doc: any) => {
                 const transactionData = doc.data();
@@ -66,14 +63,14 @@ const FundTransfers = () => {
                 const year = transactionDate.getFullYear();
                 const monthYearKey = `${month < 10 ? '0' : ''}${month}-${year}`;
 
-                updatedMonthlyTotals.push(transactionData);
+                updatedfundTransfers.push(transactionData);
                 setIsLoading(false)
             });
 
             if (!isLoading) {
-                setMonthlyTotals(updatedMonthlyTotals);
+                setFundTransfers(updatedfundTransfers);
 
-                // if (updatedMonthlyTotals.length > 1) setActiveMonth(updatedMonthlyTotals.length - 1);
+                // if (updatedfundTransfers.length > 1) setActiveMonth(updatedfundTransfers.length - 1);
             }
         }).catch((err: any) => {
             console.log("user transaction load error :", err.message);
@@ -116,7 +113,7 @@ const FundTransfers = () => {
                 <View style={global_styles.sizedBoxTen}></View>
 
                 <View style={{}}>
-                    <Text style={[global_styles.textMedium, { fontSize: 18 }]}>Manage your losses</Text>
+                    <Text style={[global_styles.textMedium, { fontSize: 18 }]}>Manage your fund transfer</Text>
                 </View>
                 <View style={global_styles.sizedBoxTen}></View>
                 <View style={global_styles.sizedBoxTen}></View>
@@ -126,7 +123,7 @@ const FundTransfers = () => {
                     indicatorStyle='black'
                 >
                     {
-                        monthlyTotals.map((elem: any, index) => {
+                       fundTransfers.length > 0 ? fundTransfers.map((elem: any, index) => {
                             // let bd = elem.borrowDate.toDate().toDateString();
                             let lOdate = elem.dateOfLoss.toDate().toDateString();
                             return (
@@ -146,7 +143,7 @@ const FundTransfers = () => {
                                         <Button
                                             // onPress={() => setIsmodalVisible(employee)}
                                             buttonStyle={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey' }}
-                                            // style={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey' }}
+                                        // style={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey' }}
                                         >
                                             <Text style={{ color: 'black', fontWeight: '800', fontSize: 14, paddingHorizontal: 5 }}>
                                                 Manage User
@@ -155,7 +152,12 @@ const FundTransfers = () => {
                                     </View>
                                 </View>
                             )
-                        })
+                        }):
+                        (
+                            <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+                                <Text style={[global_styles.textMedium, global_styles.textBold,global_styles.textCenter]}>No Fund Transfer Found</Text>
+                            </View>
+                        )
                     }
 
                 </ScrollView>
@@ -192,6 +194,11 @@ const FundTransfers = () => {
                                     setSelected={(val: string) => setUserRole(val)}
                                     data={data}
                                     save="value"
+                                    dropdownTextStyles={{ color: 'black' }}
+                                    dropdownStyles={{ backgroundColor: '#fff' }}
+                                    placeholder='Loss Sector'
+                                    boxStyles={{ padding: 0, height: 40, margin: 0, }}
+                                    inputStyles={{ height: 30, color: 'black' }}
                                 />
                                 <Text></Text>
 
@@ -209,16 +216,16 @@ const FundTransfers = () => {
                     </View>
                 </Modal>
             </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', padding: 20 }}>
+            {/* <View style={{ flexDirection: 'row', justifyContent: 'flex-end', padding: 20 }}>
                 <FAB
                     visible={true}
-                    title="Add Borrow"
+                    title="Add Fund Transfer"
                     upperCase
                     icon={{ name: 'add', color: 'white' }}
                     color={ConstantColor.febGreen}
                     onPress={() => setShowModal(true)}
                 />
-            </View>
+            </View> */}
 
             <View>
                 <BorrowModal isModalVisible={showModal} modalHide={borrowModalHandler} />

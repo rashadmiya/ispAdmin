@@ -156,26 +156,15 @@ const Investments = () => {
                 >
                     {
                         monthlyTotals.map((elem: any, index) => {
-                            
+
                             let idate = elem?.investmentDate?.toDate().toDateString();
                             let wdate = elem?.withdrawDate?.toDate().toDateString();
                             return (
-                                <View style={[global_styles.borderBox,{marginBottom:15}]} 
-                                key={index}>
+                                <View style={[global_styles.borderBox, { marginBottom: 15 }]}
+                                    key={index}>
                                     <View style={global_styles.justifyBetweenCenter}>
-                                        <Text style={[{ width: '50%', color: 'black', fontSize: 16, fontWeight: 'bold', textAlign: 'left' }]}>Investor: {elem.partner_name}</Text>
-                                        <Text style={[{ width: '50%', color: 'black', fontSize: 16, fontWeight: 'bold', textAlign: 'right' }]}>Amount: {elem.amount}৳</Text>
-                                    </View>
-                                    <View style={global_styles.sizedBoxTen}></View>
-
-
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5 }}>
-                                        <View>
-                                            <Text style={[global_styles.textBlack, global_styles.textBold,]}>Investment Date: {idate}</Text>
-                                            {wdate && (<Text style={[global_styles.textBlack, global_styles.textBold,]}>Withdraw Date: {wdate}</Text>)}
-                                            {elem.investType && (<Text style={[global_styles.textBlack, global_styles.textBold,]}>Type: {elem.investType}</Text>)}
-                                        </View>
-                                        <View style={{ display: user.role == 'admin' ? 'flex' : 'none', flexDirection: 'row', justifyContent: 'space-between', }}>
+                                        <Text style={[{ width: '60%', color: 'black', fontSize: 16, fontWeight: 'bold', textAlign: 'left' }]}>Investor: {elem.partner_name}</Text>
+                                        <View style={{ display: user.role == 'admin' ? 'flex' : 'none', flexDirection: 'row', justifyContent: 'space-between', width: 140 }}>
                                             <Button
                                                 onPress={() => setIsUpdateModalVisible(elem)}
                                                 buttonStyle={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey', padding: 2 }}
@@ -203,6 +192,19 @@ const Investments = () => {
                                                 </Text>
                                             </Button>
                                         </View>
+                                    </View>
+                                    {/* <View style={global_styles.sizedBoxTen}></View> */}
+
+
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5 }}>
+                                        <View>
+                                            <Text style={[global_styles.textBlack, global_styles.textBold,]}>Investment Date: {idate}</Text>
+                                            {wdate && (<Text style={[global_styles.textBlack, global_styles.textBold,]}>Withdraw Date: {wdate}</Text>)}
+                                            {elem.investType && (<Text style={[global_styles.textBlack, global_styles.textBold,]}>Type: {elem.investType}</Text>)}
+                                            <Text style={[{ color: 'black',fontWeight: 'bold', }]}>Ref Msg: {elem?.ref || 'No Message'}</Text>
+                                        </View>
+                                        <Text style={[{ color: 'black', fontSize: 16, fontWeight: 'bold', textAlign: 'right' }]}>Amount: {elem.amount}৳</Text>
+
                                     </View>
                                 </View>
                             )

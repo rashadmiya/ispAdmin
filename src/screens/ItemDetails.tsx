@@ -9,7 +9,7 @@ import SelectableText from '../components/SelectableText';
 import { SelectList } from 'react-native-dropdown-select-list'
 import firestore, { firebase } from '@react-native-firebase/firestore';
 
-const ItemDetails = ({ route, navigation }:{route:any, navigation:any}) => {
+const ItemDetails = ({ route, navigation }: { route: any, navigation: any }) => {
     const { setOptions } = useNavigation();
     const [selected, setSelected] = React.useState("");
     const [updated, setUpdated] = React.useState(false);
@@ -35,7 +35,7 @@ const ItemDetails = ({ route, navigation }:{route:any, navigation:any}) => {
         });
     }, [])
     // ←
-    const dateModifier = (d:any) => {
+    const dateModifier = (d: any) => {
         let date = d.toDate();
         date = date.toISOString().substring(0, 10);
         return date;
@@ -46,10 +46,10 @@ const ItemDetails = ({ route, navigation }:{route:any, navigation:any}) => {
     const updateFirebase = async () => {
         setUpdated(true)
         await firestore().collection('registered_users').doc(itemsInfo?.orderId).update({ 'status': selected })
-        .then(()=> {
-            setUpdated(false);
-            navigation.navigate('ItemList');
-        })
+            .then(() => {
+                setUpdated(false);
+                navigation.navigate('ItemList');
+            })
     }
 
 
@@ -87,7 +87,7 @@ const ItemDetails = ({ route, navigation }:{route:any, navigation:any}) => {
 
                     {/* client details section */}
                     <View style={{ ...styles.shadow, }}>
-                        <Text style={[styles.infoHeader,styles.textShadow]}>Client Details</Text>
+                        <Text style={[styles.infoHeader, styles.textShadow]}>Client Details</Text>
                         {itemsInfo?.address && <SelectableText head={"Detail Address: "} text={itemsInfo?.address} title={"Address"} />}
                         {itemsInfo?.union && <SelectableText head={"Union: "} text={itemsInfo.union} title={"Union"} />}
                         {itemsInfo?.police_station && <SelectableText head={"Thana: "} text={itemsInfo.police_station} title={"Thana"} />}
@@ -98,9 +98,14 @@ const ItemDetails = ({ route, navigation }:{route:any, navigation:any}) => {
                     <View style={{ ...styles.shadow, padding: 5 }}>
                         <Text style={[styles.infoHeader, styles.textShadow]}>Update Status</Text>
                         <SelectList
-                            setSelected={(val:any) => setSelected(val)}
-                            data={itemsInfo.status === 'Completed'? [] : data}
+                            setSelected={(val: any) => setSelected(val)}
+                            data={itemsInfo.status === 'Completed' ? [] : data}
                             save="value"
+                            dropdownTextStyles={{ color: 'black' }}
+                            dropdownStyles={{ backgroundColor: '#fff' }}
+                            placeholder='Loss Sector'
+                            boxStyles={{ padding: 0, height: 40, margin: 0, }}
+                            inputStyles={{ height: 30, color: 'black' }}
                         />
 
                         <Text></Text>
@@ -145,7 +150,7 @@ const styles = StyleSheet.create({
     },
     page: {
         margin: 1,
-        paddingHorizontal:10
+        paddingHorizontal: 10
     },
     shadow: {
         paddingHorizontal: 15,

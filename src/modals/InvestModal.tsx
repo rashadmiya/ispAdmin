@@ -19,6 +19,7 @@ const InvestModal = ({ openedItem, isModalVisible, modalHide }:
     { openedItem: any, isModalVisible: boolean, modalHide: (afterThen?:any) => void }) => {
     const [selectInvestOption, setSelectInvestOption] = useState(1);
     const [investor, setInvestor] = useState<UserInterface | undefined>(undefined);
+    const [ref, setRef] = useState('');
     const [investAmount, setInvestAmount] = useState('');
     const [employes, setEmployes] = useState([]);
     const [filteredEmployes, setFilteredEmployes] = useState([]);
@@ -42,7 +43,7 @@ const InvestModal = ({ openedItem, isModalVisible, modalHide }:
         if (query) {
             let filteredNames = employes.filter((e: any) => {
                 return Object.values(e).some((value: any) => {
-                    return value.toString().toLowerCase().includes(query);
+                    return value.toString().toLowerCase().includes(query.toLowerCase());
                 });
             });
             setFilteredEmployes(filteredNames);
@@ -95,7 +96,8 @@ const InvestModal = ({ openedItem, isModalVisible, modalHide }:
                 createdAt: firestore.FieldValue.serverTimestamp(),
                 investmentDate: date.investDate,
                 withdrawDate: isDateTaken.withdrowDate ? date.withdrawDate : null,
-                investType: selectInvestOption == 1? 'parmanent' : 'terminal'
+                investType: selectInvestOption == 1? 'parmanent' : 'terminal',
+                reference:ref
             }
             await firestore().collection('transactions').doc().set(createTranssction)
                 .then(() => {
@@ -132,7 +134,7 @@ const InvestModal = ({ openedItem, isModalVisible, modalHide }:
         >
             <View style={{ minHeight: 300, backgroundColor: ConstantColor.lightGray, borderRadius: 10, padding: 10, }}>
                 <View>
-                    <Text style={[global_styles.modalHeader,]}>{openedItem}</Text>
+                    <Text style={[global_styles.modalHeader,{textTransform:'capitalize'}]}>{openedItem}</Text>
                     <View style={global_styles.greyLine} />
                 </View>
 
@@ -165,6 +167,7 @@ const InvestModal = ({ openedItem, isModalVisible, modalHide }:
                                     autoCapitalize="none"
                                     style={styles.text_input}
                                     keyboardType='number-pad'
+                                    
                                 />
 
                                 <View style={global_styles.sizedBoxTen}></View>
@@ -177,6 +180,11 @@ const InvestModal = ({ openedItem, isModalVisible, modalHide }:
                                         placeholderTextColor="#000"
                                         inputContainerStyle={{ paddingHorizontal: 8, }}
                                         selectionColor={'#000'}
+                                        style={{color:'black'}}
+                                        autoCorrect={false}
+                                        keyboardType="visible-password"
+                                        importantForAutofill='no'
+                                        spellCheck={false}
                                         onChangeText={(text) => findingUser(text)}
                                         flatListProps={{
                                             keyExtractor: (item: any) => item.id,
@@ -187,13 +195,23 @@ const InvestModal = ({ openedItem, isModalVisible, modalHide }:
                                                         setFilteredEmployes([])
                                                     }}
                                                 >
-                                                    <Text>{item.fullName}</Text>
+                                                    <Text style={{color:'black', padding:5}}>{item.fullName}</Text>
                                                 </Pressable>
                                             ),
                                         }}
                                     />
                                 </View>
+                                <TextInput
+                                    placeholderTextColor="#000"
+                                    placeholder="Invest Ref"
+                                    onChangeText={(text) => setRef(text)}
+                                    value={ref}
+                                    autoCapitalize="none"
+                                    style={[styles.text_input,{marginTop:50}]}
+                                    
+                                />
 
+                                <View style={global_styles.sizedBoxTen}></View>
                             </View>
 
                             <View style={{ width: '40%', flexDirection: selectInvestOption == 2 ? 'column' : 'row', justifyContent: 'center', alignItems: 'center' }}>

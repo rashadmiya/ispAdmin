@@ -145,37 +145,37 @@ const Losses = () => {
             })
     }
 
-    const lossModalHandler = (afterThen:any) => {
-        if(afterThen){
-            shouldLoadAgain? setShouldLoadAgain(false):setShouldLoadAgain(true);
+    const lossModalHandler = (afterThen: any) => {
+        if (afterThen) {
+            shouldLoadAgain ? setShouldLoadAgain(false) : setShouldLoadAgain(true);
         }
         setShowModal(false);
     }
 
-    const submitInvest = async (lossBy: string, lossAmount: string, date: any, setLossAmount: any, setLossBy: any) => {
-        if (lossBy && lossAmount) {
-            const createTranssction: LossInterface = {
-                lossReason: lossBy,
-                type: 'loss',
-                amount: parseInt(lossAmount),
-                createdAt: firestore.FieldValue.serverTimestamp(),
-                dateOfLoss: date,
-            }
-            await firestore().collection('transactions').doc().set(createTranssction)
-                .then(async () => {
-                    await createLastTwelveMonth();
-                    setLossAmount('');
-                    setLossBy('');
-                    setShowModal(false);
-                    ToastAndroid.show('Income Updated Successfully!', ToastAndroid.SHORT);
-                })
-                .catch((error: any) => console.log(error));
+    // const submitInvest = async (lossBy: string, lossAmount: string, date: any, setLossAmount: any, setLossBy: any) => {
+    //     if (lossBy && lossAmount) {
+    //         const createTranssction: LossInterface = {
+    //             lossReason: lossBy,
+    //             type: 'loss',
+    //             amount: parseInt(lossAmount),
+    //             createdAt: firestore.FieldValue.serverTimestamp(),
+    //             dateOfLoss: date,
+    //         }
+    //         await firestore().collection('transactions').doc().set(createTranssction)
+    //             .then(async () => {
+    //                 await createLastTwelveMonth();
+    //                 setLossAmount('');
+    //                 setLossBy('');
+    //                 setShowModal(false);
+    //                 ToastAndroid.show('Income Updated Successfully!', ToastAndroid.SHORT);
+    //             })
+    //             .catch((error: any) => console.log(error));
 
-            return;
+    //         return;
 
-        }
-        return Alert.alert('Alert', 'Please Enter valid name and amount')
-    }
+    //     }
+    //     return Alert.alert('Alert', 'Please Enter valid name and amount')
+    // }
 
 
     return (
@@ -200,18 +200,8 @@ const Losses = () => {
                             let lOdate = elem.dateOfLoss.toDate().toDateString();
                             return (
                                 <View style={[global_styles.borderBox, { marginBottom: 5 }]} key={index}>
-                                    <View style={global_styles.justifyBetweenCenter}>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                         <Text style={[{ width: '50%', color: 'black', fontSize: 16, fontWeight: 'bold', textAlign: 'left' }]}>Loss From: {elem?.lossReason}</Text>
-                                        <Text style={[{ width: '50%', color: 'black', fontSize: 16, fontWeight: 'bold', textAlign: 'right' }]}>Amount: {elem.amount}৳</Text>
-                                    </View>
-                                    <View style={global_styles.sizedBoxTen}></View>
-
-
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5 }}>
-                                        <View>
-                                            <Text style={[global_styles.textBlack, global_styles.textBold,]}>Date: {lOdate}</Text>
-                                        </View>
-
                                         <View style={{ display: user.role == 'admin' ? 'flex' : 'none', flexDirection: 'row', justifyContent: 'space-between', }}>
                                             <Button
                                                 onPress={() => setIsUpdateModalVisible(elem)}
@@ -240,6 +230,16 @@ const Losses = () => {
                                                 </Text>
                                             </Button>
                                         </View>
+                                    </View>
+
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5 }}>
+                                        <View>
+                                            <Text style={[{ color: 'black', fontSize: 16, fontWeight: 'bold' }]}>Amount: {elem.amount}৳</Text>
+                                            <Text style={[global_styles.textBlack, global_styles.textBold,]}>Date: {lOdate}</Text>
+                                            <Text style={[{ color: 'black', fontWeight: 'bold' }]}>Ref Msg: {elem?.ref || 'No Message'}</Text>
+                                        </View>
+
+
                                     </View>
                                 </View>
                             )
@@ -293,7 +293,7 @@ const Losses = () => {
                                     dropdownStyles={{ backgroundColor: '#fff' }}
                                     placeholder='Change Loss Sector'
                                     boxStyles={{ padding: 0, height: 40, margin: 0 }}
-                                    inputStyles={{ height: 30, }}
+                                    inputStyles={{ height: 30, color: 'black' }}
                                     dropdownTextStyles={{ color: 'black' }}
                                 />
                                 <Text></Text>

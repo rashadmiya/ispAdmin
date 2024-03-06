@@ -8,7 +8,7 @@ import HomeAccordion from '../components/common/HomeAccordion'
 import auth from '@react-native-firebase/auth'
 import firestore from '@react-native-firebase/firestore';
 import { addUser } from '../redux/slices/login_user'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import OwnerHome from '../components/OwnerHome'
 import { UserInterface } from '../interfaces/user_interface'
 import PartnersHome from '../components/PartnersHome'
@@ -23,9 +23,10 @@ const Home = ({ navigation }: { navigation: any }) => {
     const dispatch = useDispatch();
     const [user, setUser] = useState<UserInterface>();
     const [activeScreen, setActiveScreen] = useState('home')
+    const loginUser = useSelector((state: any) => state.loggedInUser.value);
 
-    useEffect(() => {
-        let currentUser = auth().currentUser;
+    useEffect( () => {
+        let currentUser =  auth().currentUser;
         const unsubscribe = firestore().collection('employes')
             .doc(currentUser?.uid)
             .onSnapshot((querySnapshot) => {
@@ -33,6 +34,8 @@ const Home = ({ navigation }: { navigation: any }) => {
                 if (user) {
                     dispatch(addUser(user));
                     setUser(user)
+                }else{
+                    setUser(loginUser)
                 }
             });
 
@@ -84,32 +87,56 @@ const Home = ({ navigation }: { navigation: any }) => {
         if (tempLossConstant) {
             dispatch(addLossConstant(tempLossConstant));
         }
-        console.log('called loadLossConstant firebase function')
+        console.log('called loadLossConstant firebase function', user)
     }
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: ConstantColor.white }}>
-            {user && user.role == 'admin' && activeScreen == 'home' && (<OwnerHome />)}
-            {user && user.role == 'admin'&& activeScreen == 'accounts' && (<PartnersHome user={user} />)}
+            {user && user.role == 'admin' && activeScreen == 'home' && (<OwnerHome user={user} />)}
+            {user && user.role == 'admin' && activeScreen == 'accounts' && (<PartnersHome user={user} />)}
+            {user && user.role == 'fund manager' && activeScreen == 'home' && (<OwnerHome user={user} />)}
+            {user && user.role == 'fund manager' && activeScreen == 'accounts' && (<PartnersHome user={user} />)}
             {user && user.role == 'partner' && (<PartnersHome user={user} />)}
             {user && user.role == 'employee' && (<ItemList navigation={navigation} />)}
-            {/* {user && user.role == 'admin' && (<Notices />)} */}
+
             {
                 user && user.role == 'admin' && (
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', position:'relative', bottom:0 }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', position: 'relative', bottom: 0 }}>
                         <TouchableOpacity
                             onPress={() => setActiveScreen('home')}
-                            style={[styles.tab, {backgroundColor: activeScreen == 'home' ? ConstantColor.secondary: ConstantColor.success}]}>
-                            <Text style={[global_styles.textWhite, global_styles.textBold, global_styles.textCenter,{
-                                color: activeScreen == 'home' ? 'black': 'white'
+                            style={[styles.tab, { backgroundColor: activeScreen == 'home' ? ConstantColor.secondary : ConstantColor.success }]}>
+                            <Text style={[global_styles.textWhite, global_styles.textBold, global_styles.textCenter, {
+                                color: activeScreen == 'home' ? 'black' : 'white'
                             }]}>Home</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity
                             onPress={() => setActiveScreen('accounts')}
-                            style={[styles.tab, {backgroundColor: activeScreen == 'accounts' ? ConstantColor.secondary: ConstantColor.success}]}>
-                            <Text style={[global_styles.textWhite, global_styles.textBold, global_styles.textCenter,{
-                                color: activeScreen == 'accounts' ? 'black': 'white'
+                            style={[styles.tab, { backgroundColor: activeScreen == 'accounts' ? ConstantColor.secondary : ConstantColor.success }]}>
+                            <Text style={[global_styles.textWhite, global_styles.textBold, global_styles.textCenter, {
+                                color: activeScreen == 'accounts' ? 'black' : 'white'
+                            }]}>Accounts</Text>
+                        </TouchableOpacity>
+                    </View>
+                )
+            }
+
+            {
+                user && user.role == 'fund manager' && (
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', position: 'relative', bottom: 0 }}>
+                        <TouchableOpacity
+                            onPress={() => setActiveScreen('home')}
+                            style={[styles.tab, { backgroundColor: activeScreen == 'home' ? ConstantColor.secondary : ConstantColor.success }]}>
+                            <Text style={[global_styles.textWhite, global_styles.textBold, global_styles.textCenter, {
+                                color: activeScreen == 'home' ? 'black' : 'white'
+                            }]}>Home</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            onPress={() => setActiveScreen('accounts')}
+                            style={[styles.tab, { backgroundColor: activeScreen == 'accounts' ? ConstantColor.secondary : ConstantColor.success }]}>
+                            <Text style={[global_styles.textWhite, global_styles.textBold, global_styles.textCenter, {
+                                color: activeScreen == 'accounts' ? 'black' : 'white'
                             }]}>Accounts</Text>
                         </TouchableOpacity>
                     </View>

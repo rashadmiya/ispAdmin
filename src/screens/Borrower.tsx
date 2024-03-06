@@ -106,7 +106,7 @@ const Borrower = () => {
         twelveMonthsAgo.setMonth(currentDate.getMonth() - 12);
 
         const lastTwelveMonthsQuery = transactionsRef.where('type', '==', 'borrow')
-        .where('createdAt', '>=', twelveMonthsAgo).where('createdAt', '<=', currentDate).orderBy('createdAt', 'desc');
+            .where('createdAt', '>=', twelveMonthsAgo).where('createdAt', '<=', currentDate).orderBy('createdAt', 'desc');
 
         await lastTwelveMonthsQuery.get().then((querySnapshot: any) => {
             const updatedMonthlyTotals: MonthlyTotal[] = [];
@@ -219,17 +219,7 @@ const Borrower = () => {
                             return (
                                 <View style={global_styles.borderBox} key={index}>
                                     <View style={global_styles.justifyBetweenCenter}>
-                                        <Text style={[{ width: '50%', color: 'black', fontSize: 16, fontWeight: 'bold', textAlign: 'left' }]}>Loan From: {elem.partner_name}</Text>
-                                        <Text style={[{ width: '50%', color: 'black', fontSize: 16, fontWeight: 'bold', textAlign: 'right' }]}>Amount: {elem.amount}৳</Text>
-                                    </View>
-                                    <View style={global_styles.sizedBoxTen}></View>
-
-
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5 }}>
-                                        <View>
-                                            <Text style={[global_styles.textBlack, global_styles.textBold,]}>Borrow Date: {bd}</Text>
-                                            <Text style={[global_styles.textBlack, global_styles.textBold,]}>Repayment Date: {rd}</Text>
-                                        </View>
+                                        <Text style={[{ width: '60%', color: 'black', fontSize: 16, fontWeight: 'bold', textAlign: 'left' }]}>Loan From: {elem.partner_name}</Text>
                                         <View style={{ display: user.role == 'admin' ? 'flex' : 'none', flexDirection: 'row', justifyContent: 'space-between', }}>
                                             <Button
                                                 onPress={() => setIsUpdateModalVisible(elem)}
@@ -258,6 +248,17 @@ const Borrower = () => {
                                                 </Text>
                                             </Button>
                                         </View>
+                                    </View>
+
+
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5 }}>
+                                        <View>
+                                            <Text style={[{ color: 'black', fontSize: 16, fontWeight: 'bold', }]}>Amount: {elem.amount}৳</Text>
+                                            <Text style={[global_styles.textBlack, global_styles.textBold,]}>Borrow Date: {bd}</Text>
+                                            <Text style={[global_styles.textBlack, global_styles.textBold,]}>Repayment Date: {rd}</Text>
+                                            <Text style={[{ color: 'black', fontWeight: 'bold', }]}>Ref Msg: {elem?.ref|| 'No Message Found'}</Text>
+                                        </View>
+
                                     </View>
                                 </View>
                             )
@@ -394,7 +395,7 @@ const Borrower = () => {
                     </View>
                 </Modal>
             </View>
-            <View style={{ display: user.role == 'admin' ? 'flex' : 'none', position:'absolute', bottom:0, padding: 5 }}>
+            <View style={{ display: user.role == 'admin' ? 'flex' : 'none', position: 'absolute', bottom: 0, padding: 5 }}>
                 <FAB
                     visible={true}
                     title="Add Borrow"

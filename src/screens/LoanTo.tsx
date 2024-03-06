@@ -145,8 +145,8 @@ const LoanTo = () => {
         setIsDateTaken({ lendDate: isDateTaken.lendDate, repaymentDate: true });
     }
 
-    const loanToModalHandler = (afterThen:any) => {
-        if(afterThen){
+    const loanToModalHandler = (afterThen: any) => {
+        if (afterThen) {
             shouldLoadAgain ? setShouldLoadAgain(false) : setShouldLoadAgain(true);
         }
         setShowModal(false);
@@ -175,24 +175,8 @@ const LoanTo = () => {
                             let rd = elem.repaymentDate.toDate().toDateString();
                             return (
                                 <View style={global_styles.borderBox} key={index}>
-                                    <View style={global_styles.justifyBetweenCenter}>
-                                        <Text style={[{ width: '50%', color: 'black', fontSize: 16, fontWeight: 'bold', textAlign: 'left' }]}>Borrower: {elem.borrower}</Text>
-                                        <Text style={[{ width: '50%', color: 'black', fontSize: 16, fontWeight: 'bold', textAlign: 'right' }]}>Amount: {elem.amount}৳</Text>
-                                    </View>
-                                    <View style={global_styles.sizedBoxTen}></View>
-
-
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5 }}>
-                                        <View>
-                                            <Text style={[global_styles.textBlack, global_styles.textBold,]}>Borrow Date: {bd}</Text>
-                                            <Text style={[global_styles.textBlack, global_styles.textBold,]}>Repayment Date: {rd}</Text>
-                                            <View style={{ flexDirection: 'row', }}>
-                                                <Text style={[global_styles.textBlack, global_styles.textSemiBold]}>Witness: </Text>
-                                                {elem.witness.map((w: any, index: number) => (
-                                                    <Text key={index} style={{ color: 'black', width: 'auto' }}>{w},</Text>
-                                                ))}
-                                            </View>
-                                        </View>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                        <Text style={[{ width: '60%', color: 'black', fontSize: 16, fontWeight: 'bold', textAlign: 'left' }]}>Borrower: {elem.borrower}</Text>
                                         <View style={{ display: user.role == 'admin' ? 'flex' : 'none', flexDirection: 'row', justifyContent: 'space-between', }}>
                                             <Button
                                                 onPress={() => setIsUpdateModalVisible(elem)}
@@ -221,6 +205,23 @@ const LoanTo = () => {
                                                 </Text>
                                             </Button>
                                         </View>
+                                    </View>
+
+
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5 }}>
+                                        <View>
+                                            <Text style={[{ color: 'black', fontSize: 16, fontWeight: 'bold', }]}>Amount: {elem.amount}৳</Text>
+                                            <Text style={[global_styles.textBlack, global_styles.textBold,]}>Borrow Date: {bd}</Text>
+                                            <Text style={[global_styles.textBlack, global_styles.textBold,]}>Repayment Date: {rd}</Text>
+                                            <View style={{ flexDirection: 'row', }}>
+                                                <Text style={[global_styles.textBlack, global_styles.textSemiBold]}>Witness: </Text>
+                                                {elem.witness.map((w: any, index: number) => (
+                                                    <Text key={index} style={{ color: 'black', width: 'auto' }}>{w},</Text>
+                                                ))}
+                                            </View>
+                                            <Text style={[global_styles.textBlack, global_styles.textBold,]}>Ref Msg: {elem?.ref || 'No Message'}</Text>
+                                        </View>
+
                                     </View>
                                 </View>
                             )
@@ -357,7 +358,7 @@ const LoanTo = () => {
                     </View>
                 </Modal>
             </View>
-            <View style={{ display: user.role == 'admin' ? 'flex' : 'none',position:'absolute', bottom:0, padding: 5 }}>
+            <View style={{ display: user.role == 'admin' ? 'flex' : 'none', position: 'absolute', bottom: 0, padding: 5 }}>
                 <FAB
                     visible={true}
                     title="Add Loan To"

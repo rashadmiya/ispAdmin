@@ -241,6 +241,59 @@ export const ownerMenuItems = [
 ];
 
 
+export const fundManagerMenuItems = [
+  
+  {
+    name: 'Fund Manager',
+    type: 'regular',
+    onPress: () => { },
+    icon: <Icon type="ion" name="alarm-outline" size={20} style={{ color: 'green' }} />,
+  },
+  {
+    name: 'Persons',
+    type: 'regular',
+    onPress: () => { },
+    icon: <Icon type="ion" name="alarm-outline" size={20} style={{ color: 'green' }} />,
+  },{
+    name: 'Notice',
+    type: 'regular',
+    onPress: () => { },
+    icon: <Icon type="ion" name="alarm-outline" size={20} style={{ color: 'green' }} />,
+  },
+  {
+    name: 'Projects',
+    type: 'regular',
+    onPress: () => { },
+    icon: <Icon type="ion" name="alarm-outline" size={20} style={{ color: 'green' }} />,
+  },
+  {
+    name: 'Proposals',
+    type: 'regular',
+    onPress: () => { },
+    icon: <Icon type="ion" name="alarm-outline" size={20} style={{ color: 'green' }} />,
+  },
+  {
+    name: 'Accounts Records',
+    type: 'nested',
+    onPress: () => { },
+    icon: <Icon type="ion" name="alarm-outline" size={20} style={{ color: 'green' }} />,
+    innerContent: [
+    {
+      name: 'Income',
+    },
+    {
+      name: 'Expenses',
+  
+    },
+    {
+      name: 'Fund Transfer',
+    },
+    ]
+  },
+  ];
+
+
+
 export const partnerMenuItems = [{
   name: 'Notice',
   type: 'regular',
@@ -472,6 +525,83 @@ export const dailyAccountsOptions = [{
       // navigation.navigate(HOME);
     }
   },]
+},
+
+];
+
+export const fundManagerAccountsOptions = [
+
+{
+  name: 'Income',
+  type: 'nested',
+  onPress: () => { },
+  icon: <Icon type="material" name="rule" size={16} style={{ color: 'black' }} />,
+  innerContent: [{
+    name: 'add',
+    parent: 'income',
+    icon: <Icon type="material" name="add-circle-outline" size={20} style={{ color: 'gray' }} />,
+    onPress: () => {
+      // navigation.navigate(HOME);
+    }
+  },
+  {
+    name: 'Browse income for edit or remove',
+    parent: 'income',
+    icon: <Icon type="material" name="edit" size={20} style={{ color: 'gray' }} />,
+    onPress: () => {
+      // navigation.navigate(HOME);
+    }
+  },
+
+  ]
+},
+{
+  name: 'Expense',
+  type: 'nested',
+  onPress: () => { },
+  icon: <Icon type="material" name="rule" size={16} style={{ color: 'gray' }} />,
+  innerContent: [{
+    name: 'add',
+    parent: 'expense',
+    icon: <Icon type="material" name="add-circle-outline" size={20} style={{ color: 'gray' }} />,
+    onPress: () => {
+      // navigation.navigate(HOME);
+    }
+  },
+  {
+    name: 'Browse expense for edit or remove',
+    parent: 'expense',
+    icon: <Icon type="material" name="edit" size={20} style={{ color: 'gray' }} />,
+    onPress: () => {
+      // navigation.navigate(HOME);
+    }
+  },
+
+  ]
+},
+
+{
+  name: 'Found Transfer',
+  type: 'nested',
+  onPress: () => { },
+  icon: <Icon type="ion" name="alarm-outline" size={20} style={{ color: 'green' }} />,
+  innerContent: [{
+    name: 'add',
+    parent: 'foundTransfer',
+    icon: <Icon type="material" name="add-circle-outline" size={20} style={{ color: 'gray' }} />,
+    onPress: () => {
+      // navigation.navigate(HOME);
+    }
+  },
+  {
+    name: 'Browse found transfer for edit or remove',
+    parent: 'foundTransfer',
+    icon: <Icon type="material" name="edit" size={20} style={{ color: 'gray' }} />,
+    onPress: () => {
+      // navigation.navigate(HOME);
+    }
+  },
+  ]
 },
 
 ];

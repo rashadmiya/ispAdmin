@@ -12,9 +12,8 @@ import { useSelector } from 'react-redux';
 import { ConstantColor } from '../utils/constant_color';
 import global_styles from '../utils/global_styles';
 
-const ProposalsModal = ({ modalFor, isModalVisible, modalHide }:
-    { modalFor: any, isModalVisible: boolean, modalHide: () => void }) => {
-    const reduxLossConstant = useSelector((state: any) => state.lossConstant.value);
+const ProposalsModal = ({ isModalVisible, modalHide }:
+    { isModalVisible: boolean, modalHide: () => void }) => {
 
     const [noticeTitle, setNoticeTitle] = useState('');
     const [noticeDetails, setNoticeDetails] = useState('');
@@ -62,7 +61,7 @@ const ProposalsModal = ({ modalFor, isModalVisible, modalHide }:
         >
             <View style={{ minHeight: 300, backgroundColor: ConstantColor.lightGray, borderRadius: 10, padding: 10, }}>
                 <View>
-                    <Text style={[global_styles.modalHeader,]}>{modalFor || "Header"}</Text>
+                    <Text style={[global_styles.modalHeader,]}>Proposal</Text>
                     <View style={global_styles.greyLine} />
                 </View>
 
@@ -70,7 +69,7 @@ const ProposalsModal = ({ modalFor, isModalVisible, modalHide }:
 
                     <View style={{ ...global_styles.paddingVerticalTen, paddingHorizontal: 10, paddingVertical: 20 }}>
                         <View>
-                            <Text style={[global_styles.modalHeader,]}>{`Enter ${modalFor} Info`}</Text>
+                            <Text style={[global_styles.modalHeader,]}>{`Enter Proposal Info`}</Text>
                         </View>
                         <Text></Text>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
@@ -89,7 +88,8 @@ const ProposalsModal = ({ modalFor, isModalVisible, modalHide }:
                                 <TextInput
                                     multiline
                                     numberOfLines={4} // Adjust this as needed
-                                    style={styles.text_input}
+                                    style={styles.text_area}
+                                    placeholderTextColor="#000"
                                     placeholder="Enter proposal details here"
                                     value={noticeDetails}
                                     onChangeText={(text) => setNoticeDetails(text)}
@@ -130,5 +130,14 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#dbdbdb'
     },
-
+    text_area: {
+        textAlignVertical:'top',
+        paddingVertical: 5,
+        paddingHorizontal: 8,
+        fontSize: 14,
+        color: '#000',
+        width: '100%',
+        borderWidth: 1,
+        borderColor: '#dbdbdb'
+    }
 })

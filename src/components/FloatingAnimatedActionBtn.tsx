@@ -11,6 +11,9 @@ const FloatingAnimatedActionBtn = () => {
     const [isOpened, setIsOpen] = useState(false);
     const animation = useRef(new Animated.Value(0)).current;
     const [modalFor, setModalFor] = useState<string | undefined>('');
+    const [noticeModal, setNoticeModal] = useState(false);
+    const [projectModal, setProjectModal] = useState(false);
+    const [proposalModal, setProposalModal] = useState(false);
 
     const rotation = {
         transform: [
@@ -49,33 +52,45 @@ const FloatingAnimatedActionBtn = () => {
         setIsOpen(false);
     }
 
-    const hideModal = () => {
-        setModalFor(undefined);
+    const hideNoticeModal = () => {
+        setNoticeModal(false)
+        handlePress();
+    }
+
+    const hideProjectModal = () => {
+        setProjectModal(false)
+        handlePress();
+    }
+
+    const hideProposalModal = () => {
+        setProposalModal(false)
         handlePress();
     }
 
     return (
         <View style={styles.container}>
 
-            <TouchableOpacity onPress={() => setModalFor('projects')}>
+            <TouchableWithoutFeedback onPress={() => {
+                setProjectModal(true);
+            }} style={{zIndex:999}}>
                 <Animated.View style={[styles.secondaryBtn, getAnimatedStyle(-80)]}>
                     {/* <Icon type='ant' name='plus' size={30} color='white' /> */}
                     <Text style={global_styles.textWhite}>Add Project</Text>
                 </Animated.View>
-            </TouchableOpacity>
+            </TouchableWithoutFeedback>
 
 
-            <TouchableOpacity onPress={() => setModalFor('proposals')}>
+            <TouchableWithoutFeedback onPress={() => setProposalModal(true)} style={{zIndex:999}}>
                 <Animated.View style={[styles.secondaryBtn, getAnimatedStyle(-140)]}>
                     <Text style={global_styles.textWhite}>Add Proposals</Text>
                 </Animated.View>
-            </TouchableOpacity>
+            </TouchableWithoutFeedback>
 
-            <TouchableOpacity onPress={() => setModalFor('notice')}>
-                <Animated.View style={[styles.secondaryBtn, getAnimatedStyle(-200)]}>
+            <TouchableWithoutFeedback onPress={() => setNoticeModal(true)} style={{zIndex:999}}>
+                <Animated.View style={[styles.secondaryBtn, getAnimatedStyle(-200)]} >
                     <Text style={global_styles.textWhite}>Add Notice</Text>
                 </Animated.View>
-            </TouchableOpacity>
+            </TouchableWithoutFeedback>
 
             <TouchableOpacity onPress={handlePress} onBlur={handlePressOut} onPressOut={handlePressOut}>
                 <Animated.View style={[styles.plusBtn, styles.menu, rotation]}>
@@ -83,9 +98,9 @@ const FloatingAnimatedActionBtn = () => {
                 </Animated.View>
             </TouchableOpacity>
 
-            <NoticeModal modalFor={modalFor} isModalVisible={modalFor == 'notice'} modalHide={hideModal} />
-            <ProjectsModal modalFor={modalFor} isModalVisible={modalFor == 'projects'} modalHide={hideModal} />
-            <ProposalsModal modalFor={modalFor} isModalVisible={modalFor == 'proposals'} modalHide={hideModal} />
+            <NoticeModal isModalVisible={noticeModal} modalHide={hideNoticeModal} />
+            <ProjectsModal isModalVisible={projectModal} modalHide={hideProjectModal} />
+            <ProposalsModal isModalVisible={proposalModal} modalHide={hideProposalModal} />
         </View>
     )
 }
@@ -123,6 +138,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         position: 'absolute',
         right: 0,
-        zIndex: -1
+        zIndex: 999
     }
 })

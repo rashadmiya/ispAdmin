@@ -74,7 +74,8 @@ const global_styles = StyleSheet.create({
         color: 'red'
     },
     textBold: {
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        color:'black'
     },
     textSemiBold: {
         fontWeight: '800'

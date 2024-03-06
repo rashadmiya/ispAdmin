@@ -3,20 +3,12 @@ import React, { ReactNode, useEffect, useState } from 'react'
 import global_styles from '../utils/global_styles'
 import { ConstantColor } from '../utils/constant_color'
 import HomeAccordion from './common/HomeAccordion'
-import { dailyAccountsOptions } from '../constants/menuItems';
+import { dailyAccountsOptions, fundManagerAccountsOptions } from '../constants/menuItems';
 import { FAB } from '@rneui/base'
 import FloatingAnimatedActionBtn from './FloatingAnimatedActionBtn'
 import { todaysBalance } from '../helper-function/calculateBalance'
 
-interface dailyAccount {
-    name: string,
-    type: string,
-    onPres: () => void,
-    icon: Element,
-    innerContent: any,
-}
-
-const OwnerHome = () => {
+const OwnerHome = ({user}:{user:any}) => {
     const [dailyAccountsOpts, setDailyAccountsOpts] = useState(dailyAccountsOptions);
     const [balanceToday, setBalanceToday] = useState<number | undefined>(undefined);
 
@@ -50,7 +42,7 @@ const OwnerHome = () => {
             <View style={global_styles.sizedBoxTen}></View>
 
             <TouchableOpacity onPress={showBalanceFun}
-                style={{ ...global_styles.headerWrapper, backgroundColor: "#99EDC3", padding: 12, borderRadius: 50 }}>
+                style={{ ...global_styles.headerWrapper, backgroundColor: ConstantColor.secondary, padding: 12, borderRadius: 50 }}>
                 {balanceToday ? (
                     <Text style={[global_styles.textCenter, global_styles.textMedium, global_styles.textBlack, global_styles.shadawText]}>{`Today's Balance: ${balanceToday}-৳`}</Text>
                 ) : (
@@ -76,12 +68,15 @@ const OwnerHome = () => {
                 <View style={global_styles.sizedBoxTen}></View>
 
 
-                {dailyAccountsOpts.map((val: any, index) => (
+                {user && user.role == 'admin' && dailyAccountsOpts.map((val: any, index) => (
+                    <HomeAccordion key={index} value={val} type={val.type} />
+                ))}
+                {user && user.role == 'fund manager' && fundManagerAccountsOptions.map((val: any, index) => (
                     <HomeAccordion key={index} value={val} type={val.type} />
                 ))}
             </ScrollView>
 
-            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', }}>
+            <View style={{ position:'absolute', right:10, bottom:5}}>
                 <FloatingAnimatedActionBtn />
             </View>
         </View>

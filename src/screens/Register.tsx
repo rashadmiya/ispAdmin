@@ -46,7 +46,7 @@ export default function Register({ navigation }: { navigation: any }) {
           fullName,
           email,
           phone,
-          role:'user',
+          role:'employee',
           incomeRate:0.0,
           sharePercentage:0.0
         };

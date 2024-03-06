@@ -15,9 +15,9 @@ import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/d
 import Icon from '../utils/customIcons';
 
 const BorrowModal = ({ isModalVisible, modalHide }: { isModalVisible: boolean, modalHide: (afterThen?:any) => void,}) => {
-    const [selectInvestOption, setSelectInvestOption] = useState(1);
     const [lender, setLender] = useState<UserInterface | undefined>(undefined);
     const [lendAmount, setLendAmount] = useState('');
+    const [ref, setRef] = useState('');
     const [employes, setEmployes] = useState([]);
     const [filteredEmployes, setFilteredEmployes] = useState([]);
     const [showLendDate, setShowLendDate] = useState(Platform.OS === 'ios');
@@ -40,7 +40,7 @@ const BorrowModal = ({ isModalVisible, modalHide }: { isModalVisible: boolean, m
         if (query) {
             let filteredNames = employes.filter((e: any) => {
                 return Object.values(e).some((value: any) => {
-                    return value.toString().toLowerCase().includes(query);
+                    return value.toString().toLowerCase().includes(query.toLowerCase());
                 });
             });
             setFilteredEmployes(filteredNames);
@@ -92,7 +92,8 @@ const BorrowModal = ({ isModalVisible, modalHide }: { isModalVisible: boolean, m
                 amount: parseInt(lendAmount),
                 createdAt: firestore.FieldValue.serverTimestamp(),
                 borrowDate: date.lendDate,
-                repaymentDate: isDateTaken.repaymentDate ? date.repaymentDate : null
+                repaymentDate: isDateTaken.repaymentDate ? date.repaymentDate : null,
+                reference: ref,
             }
             await firestore().collection('transactions').doc().set(createTranssction)
                 .then(() => {
@@ -100,7 +101,7 @@ const BorrowModal = ({ isModalVisible, modalHide }: { isModalVisible: boolean, m
                     modalHide(afterThen);
                     setLendAmount('');
                     setLender(undefined);
-                    ToastAndroid.show('Borrows Update Successfull!', ToastAndroid.SHORT);
+                    ToastAndroid.show('Borrows Created Successfull!', ToastAndroid.SHORT);
 
                 })
                 .catch((error: any) => console.log(error));
@@ -160,11 +161,15 @@ const BorrowModal = ({ isModalVisible, modalHide }: { isModalVisible: boolean, m
                                     <AutocompleteInput
                                         data={Array.from(filteredEmployes)}
                                         value={lender?.fullName}
-                                        placeholder={`Lender's name`}
+                                        placeholder={`Lender's Name`}
                                         placeholderTextColor="#000"
                                         inputContainerStyle={{ paddingHorizontal: 8, }}
                                         selectionColor={'#000'}
+                                        style={{color:'black'}}
+
                                         onChangeText={(text) => findingUser(text)}
+                                        listContainerStyle={{zIndex:999}}
+                                        containerStyle={{zIndex:99999}}
                                         flatListProps={{
                                             keyExtractor: (item: any) => item.id,
                                             renderItem: ({ item, index }) => (
@@ -174,13 +179,23 @@ const BorrowModal = ({ isModalVisible, modalHide }: { isModalVisible: boolean, m
                                                         setFilteredEmployes([])
                                                     }}
                                                 >
-                                                    <Text>{item.fullName}</Text>
+                                                    <Text style={{color:'black', padding:5}}>{item.fullName}</Text>
                                                 </Pressable>
                                             ),
                                         }}
                                     />
                                 </View>
 
+                                <TextInput
+                                    placeholderTextColor="#000"
+                                    placeholder="Borrow's Ref"
+                                    onChangeText={(text) => setRef(text)}
+                                    value={ref}
+                                    autoCapitalize="none"
+                                    style={[styles.text_input,{marginTop:50}]}
+                                />
+
+                                <View style={global_styles.sizedBoxTen}></View>
                             </View>
 
                             <View style={{ width: '40%', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>

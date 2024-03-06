@@ -8,7 +8,8 @@ export const ConstantColor = {
     // secondary: "#3DED97",
     accent: "#4895ef",
     danger: "#f72585",
-    success: "#4cc9f0",
+    // success: "#4cc9f0",
+    success: "#1Baac1",
     grey: "#adb5db",
     febGreen:"#1BABA1",
     secondary:"#1BABA1"

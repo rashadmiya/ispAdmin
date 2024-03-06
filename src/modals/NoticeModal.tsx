@@ -12,9 +12,8 @@ import { useSelector } from 'react-redux';
 import { ConstantColor } from '../utils/constant_color';
 import global_styles from '../utils/global_styles';
 
-const NoticeModal = ({ modalFor, isModalVisible, modalHide }:
-    { modalFor: any, isModalVisible: boolean, modalHide: () => void }) => {
-    const reduxLossConstant = useSelector((state: any) => state.lossConstant.value);
+const NoticeModal = ({isModalVisible, modalHide }:
+    {isModalVisible: boolean, modalHide: () => void }) => {
 
     const [noticeTitle, setNoticeTitle] = useState('');
     const [noticeDetails, setNoticeDetails] = useState('');
@@ -41,7 +40,7 @@ const NoticeModal = ({ modalFor, isModalVisible, modalHide }:
             return;
 
         }
-        return Alert.alert('Alert', 'Please Enter valid name and amount')
+        return Alert.alert('Alert', 'Please Enter valid title and msg')
     }
 
     return (
@@ -62,7 +61,7 @@ const NoticeModal = ({ modalFor, isModalVisible, modalHide }:
         >
             <View style={{ minHeight: 300, backgroundColor: ConstantColor.lightGray, borderRadius: 10, padding: 10, }}>
                 <View>
-                    <Text style={[global_styles.modalHeader,]}>{modalFor || "Header"}</Text>
+                    <Text style={[global_styles.modalHeader,]}>Notice</Text>
                     <View style={global_styles.greyLine} />
                 </View>
 
@@ -70,7 +69,7 @@ const NoticeModal = ({ modalFor, isModalVisible, modalHide }:
 
                     <View style={{ ...global_styles.paddingVerticalTen, paddingHorizontal: 10, paddingVertical: 20 }}>
                         <View>
-                            <Text style={[global_styles.modalHeader,]}>{`Enter ${modalFor} Info`}</Text>
+                            <Text style={[global_styles.modalHeader,]}>{`Enter Notice Info`}</Text>
                         </View>
                         <Text></Text>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
@@ -89,7 +88,8 @@ const NoticeModal = ({ modalFor, isModalVisible, modalHide }:
                                 <TextInput
                                     multiline
                                     numberOfLines={4} // Adjust this as needed
-                                    style={styles.text_input}
+                                    placeholderTextColor="#000"
+                                    style={[styles.text_input,{textAlignVertical:'top'}]}
                                     placeholder="Enter notice text here"
                                     value={noticeDetails}
                                     onChangeText={(text) => setNoticeDetails(text)}

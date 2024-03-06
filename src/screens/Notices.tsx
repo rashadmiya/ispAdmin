@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from 'react'
-import { Button, SafeAreaView, ScrollView, StyleSheet, Text, ToastAndroid, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
-import global_styles from '../utils/global_styles'
-import { ConstantColor } from '../utils/constant_color'
 import firestore from '@react-native-firebase/firestore';
-import { SelectList } from 'react-native-dropdown-select-list'
-import Modal from 'react-native-modal';
+import React, { useEffect, useState } from 'react';
+import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useSelector } from 'react-redux';
 import { UserInterface } from '../interfaces/user_interface';
 import Loader from '../utils/Loder';
-import { useSelector } from 'react-redux';
+import { ConstantColor } from '../utils/constant_color';
+import global_styles from '../utils/global_styles';
 
 
 const Notices = () => {

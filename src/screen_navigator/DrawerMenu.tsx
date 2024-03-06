@@ -4,7 +4,7 @@ import Icon from '../utils/customIcons';
 import { ConstantColor } from '../utils/constant_color';
 import global_styles from '../utils/global_styles';
 import { AuthContext } from '../utils/auth_context';
-import { ownerMenuItems, partnerMenuItems } from '../constants/menuItems';
+import { fundManagerMenuItems, ownerMenuItems, partnerMenuItems } from '../constants/menuItems';
 import Accordion from '../components/drawer/Drawer_accordion';
 import { useDispatch, useSelector } from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
@@ -30,24 +30,30 @@ const DrawerMenu = (props: any) => {
       if (!loginUser.role) {
         let user = await loadUser();
         if (user && user.role == 'admin') {
-          setDrawerItems(ownerMenuItems);
+          return setDrawerItems(ownerMenuItems);
         }
         if (user && user.role == 'partner') {
-          setDrawerItems(partnerMenuItems);
+          return setDrawerItems(partnerMenuItems);
         }
         if (user && user.role == 'employee') {
-          setDrawerItems([]);
+          return setDrawerItems([]);
+        }
+        if (user && user.role == 'fund manager') {
+          return setDrawerItems(fundManagerMenuItems);
         }
       }
 
       if (loginUser.role == 'admin') {
-        setDrawerItems(ownerMenuItems);
+        return setDrawerItems(ownerMenuItems);
       }
       if (loginUser.role == 'partner') {
-        setDrawerItems(partnerMenuItems);
+        return setDrawerItems(partnerMenuItems);
       }
       if (loginUser && loginUser.role == 'employee') {
-        setDrawerItems([]);
+        return setDrawerItems([]);
+      }
+      if (loginUser && loginUser.role == 'fund manager') {
+        return setDrawerItems(fundManagerMenuItems);
       }
     }
     loadDrawerContent();

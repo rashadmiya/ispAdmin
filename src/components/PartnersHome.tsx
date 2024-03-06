@@ -269,19 +269,11 @@ const PartnersHome = ({ user }: { user: UserInterface }) => {
         <View style={[global_styles.customContainer, { flex: 1 }]}>
             {isLoading && <Loader />}
             <>
-                {/* <View style={global_styles.sizedBoxTen}></View>
-                <View style={[global_styles.headerWrapper, global_styles.shadow]}>
-                    <Text
-                        style={[global_styles.shadawText, global_styles.textBold, global_styles.textLarge, global_styles.textCenter, global_styles.paddingVerticalTen]}
-                    >
-                        {user.fullName} AC
-                    </Text>
-                </View> */}
                 <View style={{ width: "100%", alignItems: 'center' }}>
                     <TouchableOpacity onPress={() => {
                         parnerShare ? null : partnerShareFun();
                     }}
-                        style={{ width: '50%', backgroundColor: '#99EDC3', padding: 12, borderRadius: 50 }}>
+                        style={{ width: '50%', backgroundColor: ConstantColor.secondary, padding: 8, borderRadius: 50 }}>
                         {parnerShare ? (
                             <Text style={[global_styles.textCenter, global_styles.textMedium, global_styles.textBlack]}>{`Your Share: ${parnerShare} %`}</Text>
                         ) : (
@@ -296,7 +288,7 @@ const PartnersHome = ({ user }: { user: UserInterface }) => {
                 <TouchableOpacity onPress={() => {
                     parnerProfit ? null : showProfitFun();
                 }}
-                    style={{ ...global_styles.headerWrapper, backgroundColor: "#99EDC3", padding: 12, borderRadius: 50 }}>
+                    style={{ ...global_styles.headerWrapper, backgroundColor: ConstantColor.secondary, padding: 12, borderRadius: 50 }}>
                     {parnerProfit ? (
                         <Text style={[global_styles.textCenter, global_styles.textMedium, global_styles.textBlack, global_styles.shadawText]}>{`Profit of  ${monthNameGenerator(monthlyTotals[monthlyTotals.length - 1].month)}: ${parnerProfit} ৳`}</Text>
                     ) : (
@@ -371,7 +363,7 @@ const PartnersHome = ({ user }: { user: UserInterface }) => {
                             <KeyValueListViewer title='loss' amount={monthlyTotals[activeMonth].data.loss} />
                         </View>
                     ) : (
-                        <View style={global_styles.sizedBoxTen}>
+                        <View  style={{flex:1, flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
                             <ActivityIndicator color={'black'} size={'large'} />
                         </View>
 

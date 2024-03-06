@@ -12,9 +12,8 @@ import { useSelector } from 'react-redux';
 import { ConstantColor } from '../utils/constant_color';
 import global_styles from '../utils/global_styles';
 
-const ProjectsModal = ({ modalFor, isModalVisible, modalHide }:
-    { modalFor: any, isModalVisible: boolean, modalHide: () => void }) => {
-    const reduxLossConstant = useSelector((state: any) => state.lossConstant.value);
+const ProjectsModal = ({isModalVisible, modalHide }:
+    {isModalVisible: boolean, modalHide: () => void }) => {
 
     const [noticeTitle, setNoticeTitle] = useState('');
     const [noticeDetails, setNoticeDetails] = useState('');
@@ -62,7 +61,7 @@ const ProjectsModal = ({ modalFor, isModalVisible, modalHide }:
         >
             <View style={{ minHeight: 300, backgroundColor: ConstantColor.lightGray, borderRadius: 10, padding: 10, }}>
                 <View>
-                    <Text style={[global_styles.modalHeader,]}>{modalFor || "Header"}</Text>
+                    <Text style={[global_styles.modalHeader,]}>Project</Text>
                     <View style={global_styles.greyLine} />
                 </View>
 
@@ -70,7 +69,7 @@ const ProjectsModal = ({ modalFor, isModalVisible, modalHide }:
 
                     <View style={{ ...global_styles.paddingVerticalTen, paddingHorizontal: 10, paddingVertical: 20 }}>
                         <View>
-                            <Text style={[global_styles.modalHeader,]}>{`Enter ${modalFor} Info`}</Text>
+                            <Text style={[global_styles.modalHeader,]}>{`Enter Project Info`}</Text>
                         </View>
                         <Text></Text>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
@@ -89,7 +88,8 @@ const ProjectsModal = ({ modalFor, isModalVisible, modalHide }:
                                 <TextInput
                                     multiline
                                     numberOfLines={4} // Adjust this as needed
-                                    style={styles.text_input}
+                                    placeholderTextColor="#000"
+                                    style={[styles.text_input,{textAlignVertical:'top'}]}
                                     placeholder="Enter ptoject details here"
                                     value={noticeDetails}
                                     onChangeText={(text) => setNoticeDetails(text)}
