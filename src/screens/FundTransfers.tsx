@@ -1,7 +1,7 @@
 import firestore from '@react-native-firebase/firestore';
 import { Button, FAB } from '@rneui/base';
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, ToastAndroid, TouchableOpacity, TouchableWithoutFeedback, View, } from 'react-native';
+import { Dimensions, SafeAreaView, ScrollView, StyleSheet, Text, ToastAndroid, TouchableOpacity, TouchableWithoutFeedback, View, } from 'react-native';
 import { SelectList } from 'react-native-dropdown-select-list';
 import Modal from 'react-native-modal';
 import { UserInterface } from '../interfaces/user_interface';
@@ -107,7 +107,7 @@ const FundTransfers = () => {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: ConstantColor.white }}>
-            {isLoading && <Loader />}
+
             <View style={global_styles.customContainer}>
 
                 <View style={global_styles.sizedBoxTen}></View>
@@ -119,11 +119,11 @@ const FundTransfers = () => {
                 <View style={global_styles.sizedBoxTen}></View>
 
                 <ScrollView
-                    style={{ backgroundColor: ConstantColor.white, opacity: 0.8, overflow: 'scroll', marginBottom: 150 }}
+                    style={{ backgroundColor: ConstantColor.white, opacity: 0.8, overflow: 'scroll', }}
                     indicatorStyle='black'
                 >
                     {
-                       fundTransfers.length > 0 ? fundTransfers.map((elem: any, index) => {
+                        fundTransfers.length > 0 && fundTransfers.map((elem: any, index) => {
                             // let bd = elem.borrowDate.toDate().toDateString();
                             let lOdate = elem.dateOfLoss.toDate().toDateString();
                             return (
@@ -152,13 +152,13 @@ const FundTransfers = () => {
                                     </View>
                                 </View>
                             )
-                        }):
-                        (
-                            <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-                                <Text style={[global_styles.textMedium, global_styles.textBold,global_styles.textCenter]}>No Fund Transfer Found</Text>
-                            </View>
-                        )
+                        })
                     }
+                    {isLoading ? fundTransfers.length <= 0 && (
+                        <View style={{ flex: 1, flexDirection:'row', justifyContent: 'center', alignItems: 'center', height: Dimensions.get("screen").height/1.5 }}>
+                            <Text style={[global_styles.textMedium, global_styles.textBold, global_styles.textCenter]}>No Fund Transfer Found</Text>
+                        </View>
+                    ) : (<Loader />)}
 
                 </ScrollView>
                 <View style={global_styles.sizedBoxTen}></View>

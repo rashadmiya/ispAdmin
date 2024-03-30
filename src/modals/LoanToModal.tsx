@@ -14,9 +14,12 @@ import { UserInterface } from '../interfaces/user_interface';
 import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import Icon from '../utils/customIcons';
 import { Button } from '@rneui/base';
+import { useSelector } from 'react-redux';
 
 const LoanToModal = ({ openedItem, isModalVisible, modalHide, }: 
     { openedItem: any, isModalVisible: boolean, modalHide: (afterThen?:any) => void,  }) => {
+    const loginUser = useSelector((state: any) => state.loggedInUser.value);
+
     const [borrower, setBorrower] = useState<UserInterface | undefined>(undefined);
     const [lendAmount, setLendAmount] = useState('');
     const [ref, setRef] = useState('');
@@ -117,6 +120,7 @@ const LoanToModal = ({ openedItem, isModalVisible, modalHide, }:
                 conditions: condition,
                 witness: witnes,
                 reference:ref,
+                entryBy: loginUser.fullName,
             }
             await firestore().collection('transactions').doc().set(createTranssction)
                 .then(() => {

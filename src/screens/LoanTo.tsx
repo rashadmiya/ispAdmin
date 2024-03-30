@@ -166,7 +166,7 @@ const LoanTo = () => {
                 <View style={global_styles.sizedBoxTen}></View>
 
                 <ScrollView
-                    style={{ backgroundColor: ConstantColor.white, opacity: 0.8, overflow: 'scroll', marginBottom: 150 }}
+                    style={{ backgroundColor: ConstantColor.white, opacity: 0.8, overflow: 'scroll', marginBottom: 90 }}
                     indicatorStyle='black'
                 >
                     {
@@ -180,11 +180,9 @@ const LoanTo = () => {
                                         <View style={{ display: user.role == 'admin' ? 'flex' : 'none', flexDirection: 'row', justifyContent: 'space-between', }}>
                                             <Button
                                                 onPress={() => setIsUpdateModalVisible(elem)}
-                                                buttonStyle={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey', padding: 2 }}
+                                                buttonStyle={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey', padding: 1, marginRight:2 }}
                                             >
-                                                <Text style={{ color: 'black', fontWeight: '800', fontSize: 14, paddingHorizontal: 5 }}>
-                                                    Edit
-                                                </Text>
+                                                <Icon type="material" name="edit" size={20} style={{ color: 'gray' }} />
                                             </Button>
                                             <Button
                                                 onPress={() => {
@@ -198,11 +196,9 @@ const LoanTo = () => {
                                                             { text: 'OK', onPress: () => deleteLossTransection(elem) },
                                                         ])
                                                 }}
-                                                buttonStyle={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey', padding: 2 }}
+                                                buttonStyle={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey', padding: 1 }}
                                             >
-                                                <Text style={{ color: 'black', fontWeight: '800', fontSize: 14, paddingHorizontal: 5 }}>
-                                                    Delete
-                                                </Text>
+                                                <Icon type="material" name="delete-outline" size={20} style={{ color: 'red' }} />
                                             </Button>
                                         </View>
                                     </View>
@@ -211,15 +207,18 @@ const LoanTo = () => {
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5 }}>
                                         <View>
                                             <Text style={[{ color: 'black', fontSize: 16, fontWeight: 'bold', }]}>Amount: {elem.amount}৳</Text>
-                                            <Text style={[global_styles.textBlack, global_styles.textBold,]}>Borrow Date: {bd}</Text>
-                                            <Text style={[global_styles.textBlack, global_styles.textBold,]}>Repayment Date: {rd}</Text>
+                                            <Text style={{ color: 'black', fontWeight: '500', fontSize: 13 }}>Borrow Date: {bd}</Text>
+                                            <Text style={{ color: 'black', fontWeight: '500', fontSize: 13 }}>Repayment Date: {rd}</Text>
                                             <View style={{ flexDirection: 'row', }}>
-                                                <Text style={[global_styles.textBlack, global_styles.textSemiBold]}>Witness: </Text>
+                                                <Text style={{ color: 'black', fontWeight: '500', fontSize: 13 }}>Witness: </Text>
                                                 {elem.witness.map((w: any, index: number) => (
                                                     <Text key={index} style={{ color: 'black', width: 'auto' }}>{w},</Text>
                                                 ))}
                                             </View>
-                                            <Text style={[global_styles.textBlack, global_styles.textBold,]}>Ref Msg: {elem?.ref || 'No Message'}</Text>
+                                            <Text style={{ color: 'black', fontWeight: '500', fontSize: 13 }}>Ref Msg: {elem?.reference || 'No Message'}</Text>
+                                            {elem.entryBy && <Text style={[global_styles.textBlack, global_styles.textBold,]}
+                                            >Entry By: {elem.entryBy || 'Clerk not found'}</Text>
+                                            }
                                         </View>
 
                                     </View>

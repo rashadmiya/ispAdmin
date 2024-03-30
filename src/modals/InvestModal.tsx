@@ -1,22 +1,28 @@
-import React, { FC, useEffect, useState } from 'react';
-import {
-    Alert, Dimensions, Pressable, TextInput, ToastAndroid, TouchableOpacity,
-    TouchableWithoutFeedback, Platform
-} from 'react-native';
-import { StyleSheet, Text, View } from 'react-native';
-import Modal from 'react-native-modal';
-import global_styles from '../utils/global_styles';
-import { ConstantColor } from '../utils/constant_color';
-import AutoComplete from '../components/common/AutoComplete';
-import AutocompleteInput from 'react-native-autocomplete-input';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import firestore from '@react-native-firebase/firestore';
+import React, { useEffect, useState } from 'react';
+import {
+    Alert, Dimensions,
+    Platform,
+    Pressable,
+    StyleSheet, Text,
+    TextInput, ToastAndroid, TouchableOpacity,
+    TouchableWithoutFeedback,
+    View
+} from 'react-native';
+import AutocompleteInput from 'react-native-autocomplete-input';
+import Modal from 'react-native-modal';
+import { useSelector } from 'react-redux';
 import { InvestInterface } from '../interfaces/TransactionInterface';
 import { UserInterface } from '../interfaces/user_interface';
-import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+import { ConstantColor } from '../utils/constant_color';
 import Icon from '../utils/customIcons';
+import global_styles from '../utils/global_styles';
 
 const InvestModal = ({ openedItem, isModalVisible, modalHide }:
     { openedItem: any, isModalVisible: boolean, modalHide: (afterThen?:any) => void }) => {
+    const loginUser = useSelector((state: any) => state.loggedInUser.value);
+
     const [selectInvestOption, setSelectInvestOption] = useState(1);
     const [investor, setInvestor] = useState<UserInterface | undefined>(undefined);
     const [ref, setRef] = useState('');
@@ -97,7 +103,8 @@ const InvestModal = ({ openedItem, isModalVisible, modalHide }:
                 investmentDate: date.investDate,
                 withdrawDate: isDateTaken.withdrowDate ? date.withdrawDate : null,
                 investType: selectInvestOption == 1? 'parmanent' : 'terminal',
-                reference:ref
+                reference:ref,
+                entryBy: loginUser.fullName,
             }
             await firestore().collection('transactions').doc().set(createTranssction)
                 .then(() => {

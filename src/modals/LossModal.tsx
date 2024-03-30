@@ -20,9 +20,9 @@ import global_styles from '../utils/global_styles';
 
 const LossModal = ({ openedItem, isModalVisible, modalHide, }:
     { openedItem: any, isModalVisible: boolean, modalHide: (afterThen?: any) => void, }) => {
-    const reduxLossConstant = useSelector((state: any) => state.lossConstant.value);
+    const loginUser = useSelector((state: any) => state.loggedInUser.value);
 
-    const [losser, setLosser] = useState<UserInterface | undefined>(undefined);
+    const reduxLossConstant = useSelector((state: any) => state.lossConstant.value);
     const [lossAmount, setLossAmount] = useState('');
     const [lossBy, setLossBy] = useState('');
     const [showLossDate, setShowLossDate] = useState(Platform.OS === 'ios');
@@ -53,7 +53,8 @@ const LossModal = ({ openedItem, isModalVisible, modalHide, }:
                 amount: parseInt(lossAmount),
                 createdAt: firestore.FieldValue.serverTimestamp(),
                 dateOfLoss: date,
-                reference:ref
+                reference:ref,
+                entryBy: loginUser.fullName,
             }
             firestore().collection('transactions').doc().set(createTranssction)
                 .then(async () => {

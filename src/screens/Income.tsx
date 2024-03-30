@@ -10,6 +10,7 @@ import IncomeModal from '../modals/IncomeModal';
 import Loader from '../utils/Loder';
 import { ConstantColor } from '../utils/constant_color';
 import global_styles from '../utils/global_styles';
+import Icon from '../utils/customIcons';
 
 interface MonthlyTotal {
     amount: number;
@@ -135,7 +136,7 @@ const Income = () => {
                 <View style={global_styles.sizedBoxTen}></View>
 
                 <ScrollView
-                    style={{ backgroundColor: ConstantColor.white, opacity: 0.8, overflow: 'scroll', marginBottom: 150 }}
+                    style={{ backgroundColor: ConstantColor.white, opacity: 0.8, overflow: 'scroll', marginBottom: 80 }}
                     indicatorStyle='black'
                 >
                     {
@@ -146,14 +147,12 @@ const Income = () => {
                                 <View style={global_styles.borderBox} key={index}>
                                     <View style={global_styles.justifyBetweenCenter}>
                                         <Text style={[{ width: '60%', color: 'black', fontSize: 16, fontWeight: 'bold', textAlign: 'left' }]}>Earn From: {elem.incomeFrom}</Text>
-                                        <View style={{ display: loggedInUser.role == 'admin' ? 'flex' : 'none', flexDirection: 'row', justifyContent: 'space-between', width: 140 }}>
+                                        <View style={{ display: loggedInUser.role == 'admin' ? 'flex' : 'none', flexDirection: 'row', justifyContent: 'space-between' }}>
                                             <Button
                                                 onPress={() => setIsUpdateModalVisible(elem)}
-                                                buttonStyle={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey', padding: 2 }}
+                                                buttonStyle={{ backgroundColor: '#fff', marginRight: 1, opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey', padding: 1 }}
                                             >
-                                                <Text style={{ color: 'black', fontWeight: '800', fontSize: 14, paddingHorizontal: 5 }}>
-                                                    Edit
-                                                </Text>
+                                                <Icon type="material" name="edit" size={20} style={{ color: 'gray' }} />
                                             </Button>
                                             <Button
                                                 onPress={() => {
@@ -167,25 +166,21 @@ const Income = () => {
                                                             { text: 'OK', onPress: () => deleteIncomeTransaction(elem) },
                                                         ])
                                                 }}
-                                                buttonStyle={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey', padding: 2 }}
+                                                buttonStyle={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey', padding: 1 }}
                                             >
-                                                <Text style={{ color: 'black', fontWeight: '800', fontSize: 14, paddingHorizontal: 5 }}>
-                                                    Delete
-                                                </Text>
+                                                <Icon type="material" name="delete-outline" size={20} style={{ color: 'red' }} />
+
                                             </Button>
                                         </View>
                                     </View>
 
-
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5 }}>
-                                        <View>
-                                            <Text style={[global_styles.textBlack, global_styles.textBold,]}>Income Date: {incomeDate}</Text>
-                                            <Text style={[{ color: 'black', fontWeight: 'bold' }]}>Ref Msg: {elem?.ref || 'No Message'}</Text>
-                                        </View>
-
-                                        <Text style={[{ color: 'black', fontSize: 16, fontWeight: 'bold', textAlign: 'right' }]}>Amount: {elem.amount}৳</Text>
-
-
+                                    <View style={{ paddingVertical: 5 }}>
+                                        <Text style={[{ color: 'black', fontSize: 16, fontWeight: 'bold' }]}>Amount: {elem.amount}৳</Text>
+                                        <Text style={{ color: 'black', fontWeight: '500', fontSize: 13 }}>Income Date: {incomeDate}</Text>
+                                        <Text style={{ color: 'black', fontWeight: '500', fontSize: 13 }}>Ref Msg: {elem?.reference || 'No Message'}</Text>
+                                        {elem.entryBy && <Text style={[global_styles.textBlack, global_styles.textBold,]}
+                                        >Entry By: {elem.entryBy || 'Clerk not found'}</Text>
+                                        }
                                     </View>
                                 </View>
                             )

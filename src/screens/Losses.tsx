@@ -7,7 +7,7 @@ import { SelectList } from 'react-native-dropdown-select-list'
 import Modal from 'react-native-modal';
 import { UserInterface } from '../interfaces/user_interface';
 import Loader from '../utils/Loder';
-import { FAB, Button } from '@rneui/base';
+import { FAB, Button, Icon } from '@rneui/base';
 import LossModal from '../modals/LossModal';
 import { LossInterface } from '../interfaces/TransactionInterface';
 import { useSelector } from 'react-redux';
@@ -192,7 +192,7 @@ const Losses = () => {
                 <View style={global_styles.sizedBoxTen}></View>
 
                 <ScrollView
-                    style={{ backgroundColor: ConstantColor.white, opacity: 0.8, overflow: 'scroll', marginBottom: 150 }}
+                    style={{ backgroundColor: ConstantColor.white, opacity: 0.8, overflow: 'scroll', marginBottom: 90 }}
                     indicatorStyle='black'
                 >
                     {
@@ -205,11 +205,9 @@ const Losses = () => {
                                         <View style={{ display: user.role == 'admin' ? 'flex' : 'none', flexDirection: 'row', justifyContent: 'space-between', }}>
                                             <Button
                                                 onPress={() => setIsUpdateModalVisible(elem)}
-                                                buttonStyle={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey', padding: 2 }}
+                                                buttonStyle={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey', padding: 1, marginRight: 2 }}
                                             >
-                                                <Text style={{ color: 'black', fontWeight: '800', fontSize: 14, paddingHorizontal: 5 }}>
-                                                    Edit
-                                                </Text>
+                                                <Icon type="material" name="edit" size={20} style={{ color: 'gray' }} />
                                             </Button>
                                             <Button
                                                 onPress={() => {
@@ -223,22 +221,21 @@ const Losses = () => {
                                                             { text: 'OK', onPress: () => deleteLossTransection(elem) },
                                                         ])
                                                 }}
-                                                buttonStyle={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey', padding: 2 }}
+                                                buttonStyle={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey', padding: 1 }}
                                             >
-                                                <Text style={{ color: 'black', fontWeight: '800', fontSize: 14, paddingHorizontal: 5 }}>
-                                                    Delete
-                                                </Text>
+                                                <Icon type="material" name="delete-outline" size={20} style={{ color: 'red' }} />
+                                                
                                             </Button>
                                         </View>
                                     </View>
 
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5 }}>
-                                        <View>
-                                            <Text style={[{ color: 'black', fontSize: 16, fontWeight: 'bold' }]}>Amount: {elem.amount}৳</Text>
-                                            <Text style={[global_styles.textBlack, global_styles.textBold,]}>Date: {lOdate}</Text>
-                                            <Text style={[{ color: 'black', fontWeight: 'bold' }]}>Ref Msg: {elem?.ref || 'No Message'}</Text>
-                                        </View>
-
+                                    <View style={{ paddingVertical: 5 }}>
+                                        <Text style={[{ color: 'black', fontSize: 16, fontWeight: 'bold' }]}>Amount: {elem.amount}৳</Text>
+                                        <Text style={{ color: 'black', fontWeight: '500', fontSize: 13 }}>Date: {lOdate}</Text>
+                                        <Text style={{ color: 'black', fontWeight: '500', fontSize: 13 }}>Ref Msg: {elem?.reference || 'No Message'}</Text>
+                                        {elem.entryBy && <Text style={[global_styles.textBlack, global_styles.textBold,]}
+                                        >Entry By: {elem.entryBy || 'Clerk not found'}</Text>
+                                        }
 
                                     </View>
                                 </View>

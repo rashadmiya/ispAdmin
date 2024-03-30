@@ -140,7 +140,7 @@ const Investments = () => {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: ConstantColor.white }}>
             {isLoading && <Loader />}
-            <View style={global_styles.customContainer}>
+            <View style={{...global_styles.customContainer, paddingBottom:0}}>
 
                 <View style={global_styles.sizedBoxTen}></View>
 
@@ -151,7 +151,7 @@ const Investments = () => {
                 <View style={global_styles.sizedBoxTen}></View>
 
                 <ScrollView
-                    style={{ backgroundColor: ConstantColor.white, opacity: 0.8, overflow: 'scroll', marginBottom: 150 }}
+                    style={{ backgroundColor: ConstantColor.white, opacity: 0.8, overflow: 'scroll', marginBottom: 80 }}
                     indicatorStyle='black'
                 >
                     {
@@ -164,14 +164,12 @@ const Investments = () => {
                                     key={index}>
                                     <View style={global_styles.justifyBetweenCenter}>
                                         <Text style={[{ width: '60%', color: 'black', fontSize: 16, fontWeight: 'bold', textAlign: 'left' }]}>Investor: {elem.partner_name}</Text>
-                                        <View style={{ display: user.role == 'admin' ? 'flex' : 'none', flexDirection: 'row', justifyContent: 'space-between', width: 140 }}>
+                                        <View style={{ display: user.role == 'admin' ? 'flex' : 'none', flexDirection: 'row', justifyContent: 'space-between' }}>
                                             <Button
                                                 onPress={() => setIsUpdateModalVisible(elem)}
-                                                buttonStyle={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey', padding: 2 }}
+                                                buttonStyle={{ backgroundColor: '#fff', marginRight: 2, opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey', padding: 1 }}
                                             >
-                                                <Text style={{ color: 'black', fontWeight: '800', fontSize: 14, paddingHorizontal: 5 }}>
-                                                    Edit
-                                                </Text>
+                                                <Icon type="material" name="edit" size={20} style={{ color: 'gray' }} />
                                             </Button>
                                             <Button
                                                 onPress={() => {
@@ -185,26 +183,25 @@ const Investments = () => {
                                                             { text: 'OK', onPress: () => deleteInvestTransaction(elem) },
                                                         ])
                                                 }}
-                                                buttonStyle={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey', padding: 2 }}
+                                                buttonStyle={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey', padding: 1 }}
                                             >
-                                                <Text style={{ color: 'black', fontWeight: '800', fontSize: 14, paddingHorizontal: 5 }}>
-                                                    Delete
-                                                </Text>
+                                                <Icon type="material" name="delete-outline" size={20} style={{ color: 'red' }} />
                                             </Button>
                                         </View>
                                     </View>
                                     {/* <View style={global_styles.sizedBoxTen}></View> */}
 
 
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5 }}>
-                                        <View>
-                                            <Text style={[global_styles.textBlack, global_styles.textBold,]}>Investment Date: {idate}</Text>
-                                            {wdate && (<Text style={[global_styles.textBlack, global_styles.textBold,]}>Withdraw Date: {wdate}</Text>)}
-                                            {elem.investType && (<Text style={[global_styles.textBlack, global_styles.textBold,]}>Type: {elem.investType}</Text>)}
-                                            <Text style={[{ color: 'black',fontWeight: 'bold', }]}>Ref Msg: {elem?.ref || 'No Message'}</Text>
-                                        </View>
-                                        <Text style={[{ color: 'black', fontSize: 16, fontWeight: 'bold', textAlign: 'right' }]}>Amount: {elem.amount}৳</Text>
+                                    <View style={{ paddingVertical: 5 }}>
 
+                                        <Text style={[{ color: 'black', fontSize: 16, fontWeight: 'bold' }]}>Amount: {elem.amount}৳</Text>
+                                        <Text style={{ color: 'black', fontWeight: '500', fontSize: 13 }}>Investment Date: {idate}</Text>
+                                        {wdate && (<Text style={{ color: 'black', fontWeight: '500', fontSize: 13 }}>Withdraw Date: {wdate}</Text>)}
+                                        {elem.investType && (<Text style={{ color: 'black', fontWeight: '500', fontSize: 13 }}>Type: {elem.investType}</Text>)}
+                                        <Text style={{ color: 'black', fontWeight: '500', fontSize: 13 }}>Ref Msg: {elem?.reference || 'No Message'}</Text>
+                                        {elem.entryBy && <Text style={[global_styles.textBlack, global_styles.textBold,]}
+                                        >Entry By: {elem.entryBy || 'Clerk not found'}</Text>
+                                        }
                                     </View>
                                 </View>
                             )
@@ -212,12 +209,10 @@ const Investments = () => {
                     }
 
                 </ScrollView>
-                <View style={global_styles.sizedBoxTen}></View>
-
             </View>
 
 
-            <View style={{ flex: 1 }}>
+            {/* <View style={{ flex: 1 }}> */}
                 <Modal isVisible={isUpdateModalVisible ? true : false}
                     onSwipeComplete={hideModal}
                     swipeDirection="up"
@@ -351,9 +346,9 @@ const Investments = () => {
 
                     </View>
                 </Modal>
-            </View>
+            {/* </View> */}
 
-            <View style={{ display: user.role == 'admin' ? 'flex' : 'none', position: 'absolute', bottom: 0, padding: 5 }}>
+            {/* <View > */}
                 <FAB
                     visible={true}
                     title="Add Investment"
@@ -361,8 +356,9 @@ const Investments = () => {
                     icon={{ name: 'add', color: 'white' }}
                     color={ConstantColor.febGreen}
                     onPress={() => setShowModal(true)}
+                    style={{ display: user.role == 'admin' ? 'flex' : 'none', position: 'absolute', bottom: 0, padding: 5 }}
                 />
-            </View>
+            {/* </View> */}
 
             <View>
                 <InvestModal openedItem={'invest'} isModalVisible={showModal} modalHide={investModalHandler} />

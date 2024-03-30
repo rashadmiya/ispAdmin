@@ -12,6 +12,7 @@ export type InvestInterface = {
     id?:string,
     investType:string,
     reference: string,
+    entryBy?:string
 }
 
 export type IncomeInterface = {
@@ -24,6 +25,7 @@ export type IncomeInterface = {
     incomeFrom: string,
     id?:string,
     reference: string,
+    entryBy?:string
 }
 
 export type ExpenditureInterface = {
@@ -36,6 +38,7 @@ export type ExpenditureInterface = {
     expenseTo: string,
     id?:string,
     reference: string,
+    entryBy?:string
 }
 export type LossInterface = {
     // partner_name: string,
@@ -47,6 +50,7 @@ export type LossInterface = {
     dateOfLoss: any,
     id?:string,
     reference: string,
+    entryBy?: string
 }
 
 export type BorrowInterface = {
@@ -59,6 +63,7 @@ export type BorrowInterface = {
     repaymentDate: any,
     id?:string,
     reference: string,
+    entryBy?:string
 }
 
 export type LoanToInterface = {
@@ -73,4 +78,5 @@ export type LoanToInterface = {
     witness?: string[],
     id?:string,
     reference: string,
+    entryBy?:string
 }

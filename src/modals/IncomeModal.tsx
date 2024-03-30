@@ -23,6 +23,7 @@ interface IInterface {
 
 const IncomeModal = ({ openedItem, isModalVisible, modalHide }:
     { openedItem: any, isModalVisible: boolean, modalHide: (afterThen?:any) => void }) => {
+    const loginUser = useSelector((state: any) => state.loggedInUser.value);
 
     const reduxLossConstant = useSelector((state: any) => state.lossConstant.value);
     const [ref, setRef] = useState('');
@@ -57,7 +58,8 @@ const IncomeModal = ({ openedItem, isModalVisible, modalHide }:
                 amount: parseInt(earnAmount),
                 createdAt: firestore.FieldValue.serverTimestamp(),
                 incomeDate: date,
-                reference:ref
+                reference:ref,
+                entryBy: loginUser.fullName,
             }
             await firestore().collection('transactions').doc().set(createTranssction)
                 .then(() => {

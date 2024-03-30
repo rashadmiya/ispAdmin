@@ -1,6 +1,6 @@
+import React, { useState } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import firestore from '@react-native-firebase/firestore';
-import React, { useState } from 'react';
 import {
     Alert, Dimensions,
     Platform,
@@ -23,6 +23,7 @@ interface EInterface {
 
 const ExpenseModal = ({ openedItem, isModalVisible, modalHide }:
     { openedItem: any, isModalVisible: boolean, modalHide: (afterThen?:any) => void }) => {
+    const loginUser = useSelector((state: any) => state.loggedInUser.value);
         
     const reduxExpenseConstant = useSelector((state: any) => state.expenseConstant.value);
     const [expenseTo, setExpenseTo] = useState('');
@@ -56,6 +57,7 @@ const ExpenseModal = ({ openedItem, isModalVisible, modalHide }:
                 amount: parseInt(expenseAmount),
                 createdAt: firestore.FieldValue.serverTimestamp(),
                 expenseDate: date,
+                entryBy: loginUser.fullName,
                 reference:ref,
             }
             await firestore().collection('transactions').doc().set(createTranssction)

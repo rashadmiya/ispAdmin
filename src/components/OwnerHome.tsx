@@ -8,7 +8,7 @@ import { FAB } from '@rneui/base'
 import FloatingAnimatedActionBtn from './FloatingAnimatedActionBtn'
 import { todaysBalance } from '../helper-function/calculateBalance'
 
-const OwnerHome = ({user}:{user:any}) => {
+const OwnerHome = ({ user }: { user: any }) => {
     const [dailyAccountsOpts, setDailyAccountsOpts] = useState(dailyAccountsOptions);
     const [balanceToday, setBalanceToday] = useState<number | undefined>(undefined);
 
@@ -30,16 +30,12 @@ const OwnerHome = ({user}:{user:any}) => {
 
     return (
         <View style={[global_styles.customContainer, { flex: 1 }]}>
-            <View style={global_styles.sizedBoxTen}></View>
-            <View style={[global_styles.headerWrapper, global_styles.shadow]}>
+            <View style={[global_styles.headerWrapper,]}>
                 <Text
-                    style={[global_styles.shadawText, global_styles.textBold, global_styles.textLarge, global_styles.textCenter, global_styles.paddingVerticalTen]}
+                    style={[global_styles.shadawText, global_styles.textBold, global_styles.textLarge, global_styles.textCenter,]}
                 >
                     Bijoy Admin</Text>
             </View>
-
-            <View style={global_styles.sizedBoxTen}></View>
-            <View style={global_styles.sizedBoxTen}></View>
 
             <TouchableOpacity onPress={showBalanceFun}
                 style={{ ...global_styles.headerWrapper, backgroundColor: ConstantColor.secondary, padding: 12, borderRadius: 50 }}>
@@ -55,7 +51,7 @@ const OwnerHome = ({user}:{user:any}) => {
             <View style={global_styles.sizedBoxTen}></View>
 
             <ScrollView
-                style={{ backgroundColor: ConstantColor.white, opacity: 0.8, overflow: 'scroll', }}
+                style={{ backgroundColor: ConstantColor.white, opacity: 0.8, overflow: 'scroll', marginBottom: 40 }}
                 // contentContainerStyle={{ margin: 0, padding: 10, overflow:'scroll' }}
                 indicatorStyle='black'
             >
@@ -76,7 +72,7 @@ const OwnerHome = ({user}:{user:any}) => {
                 ))}
             </ScrollView>
 
-            <View style={{ position:'absolute', right:10, bottom:5}}>
+            <View style={{ position: 'absolute', right: 10, bottom: 5 }}>
                 <FloatingAnimatedActionBtn />
             </View>
         </View>
