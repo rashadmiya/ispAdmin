@@ -234,7 +234,7 @@ const Losses = () => {
                                         <Text style={{ color: 'black', fontWeight: '500', fontSize: 13 }}>Date: {lOdate}</Text>
                                         <Text style={{ color: 'black', fontWeight: '500', fontSize: 13 }}>Ref Msg: {elem?.reference || 'No Message'}</Text>
                                         {elem.entryBy && <Text style={[global_styles.textBlack, global_styles.textBold,]}
-                                        >Entry By: {elem.entryBy || 'Clerk not found'}</Text>
+                                        >Insert By: {elem.entryBy || 'Clerk not found'}</Text>
                                         }
 
                                     </View>
@@ -262,7 +262,7 @@ const Losses = () => {
                 >
                     <View style={{ minHeight: 300, backgroundColor: ConstantColor.lightGray, borderRadius: 10, padding: 10, }}>
                         <View>
-                            <Text style={[global_styles.modalHeader,]}>Update Loss Info</Text>
+                            <Text style={[global_styles.modalHeader, global_styles.textBlack]}>Update Loss Info</Text>
                             <View style={global_styles.greyLine} />
                         </View>
 
@@ -270,7 +270,7 @@ const Losses = () => {
                             <View style={{ ...global_styles.shadow, padding: 5 }}>
 
                                 <View style={global_styles.sizedBoxTen}></View>
-                                <Text style={[global_styles.textMedium, global_styles.shadawText]}>{`Update ${isUpdateModalVisible?.lossReason}'s`}</Text>
+                                <Text style={[global_styles.textMedium, global_styles.textBlack]}>{`Update ${isUpdateModalVisible?.lossReason}'s`}</Text>
                                 <View style={global_styles.sizedBoxTen}></View>
                                 <TextInput
                                     placeholderTextColor="#000"
@@ -287,11 +287,12 @@ const Losses = () => {
                                     setSelected={(val: string) => setLossReason(val)}
                                     data={reduxLossConstant}
                                     save="value"
-                                    dropdownStyles={{ backgroundColor: '#fff' }}
+                                    dropdownStyles={{ backgroundColor: '#fff', }}
                                     placeholder='Change Loss Sector'
-                                    boxStyles={{ padding: 0, height: 40, margin: 0 }}
+                                    boxStyles={{ padding: 0, height: 40, margin: 0, }}
                                     inputStyles={{ height: 30, color: 'black' }}
                                     dropdownTextStyles={{ color: 'black' }}
+                                    disabledTextStyles={{color:'#000'}}
                                 />
                                 <Text></Text>
 

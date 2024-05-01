@@ -200,7 +200,7 @@ const Investments = () => {
                                         {elem.investType && (<Text style={{ color: 'black', fontWeight: '500', fontSize: 13 }}>Type: {elem.investType}</Text>)}
                                         <Text style={{ color: 'black', fontWeight: '500', fontSize: 13 }}>Ref Msg: {elem?.reference || 'No Message'}</Text>
                                         {elem.entryBy && <Text style={[global_styles.textBlack, global_styles.textBold,]}
-                                        >Entry By: {elem.entryBy || 'Clerk not found'}</Text>
+                                        >Insert By: {elem.entryBy || 'Clerk not found'}</Text>
                                         }
                                     </View>
                                 </View>
@@ -227,7 +227,7 @@ const Investments = () => {
                 >
                     <View style={{ minHeight: 200, backgroundColor: ConstantColor.lightGray, borderRadius: 10, padding: 10, }}>
                         <View>
-                            <Text style={[global_styles.modalHeader,]}>{`${isUpdateModalVisible?.partner_name}'s Invest`}</Text>
+                            <Text style={[global_styles.modalHeader, global_styles.textBlack]}>{`${isUpdateModalVisible?.partner_name}'s Invest`}</Text>
                             <View style={global_styles.greyLine} />
                         </View>
 

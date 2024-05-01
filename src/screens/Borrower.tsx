@@ -256,7 +256,7 @@ const Borrower = () => {
                                             <Text style={{ color: 'black', fontWeight: '500', fontSize: 13 }}>Repayment Date: {rd}</Text>
                                             <Text style={[{ color: 'black', fontWeight: '500', fontSize: 13 }]}>Ref Msg: {elem?.reference || 'No Message'}</Text>
                                             {elem.entryBy && <Text style={[global_styles.textBlack, global_styles.textBold,]}
-                                            >Entry By: {elem.entryBy || 'Clerk not found'}</Text>
+                                            >Insert By: {elem.entryBy || 'Clerk not found'}</Text>
                                             }
                                         </View>
 
@@ -285,7 +285,7 @@ const Borrower = () => {
                 >
                     <View style={{ minHeight: 200, backgroundColor: ConstantColor.lightGray, borderRadius: 10, padding: 10, }}>
                         <View>
-                            <Text style={[global_styles.modalHeader,]}>Update Borrow</Text>
+                            <Text style={[global_styles.modalHeader, global_styles.textBlack]}>Update Borrow</Text>
                             <View style={global_styles.greyLine} />
                         </View>
 
@@ -294,7 +294,7 @@ const Borrower = () => {
 
                                 <View style={global_styles.sizedBoxTen}></View>
 
-                                <Text style={[global_styles.textMedium, global_styles.shadawText]}>{`Update ${isUpdateModalVisible?.partner_name}'s borrow`}</Text>
+                                <Text style={[global_styles.textMedium, global_styles.textBlack]}>{`Update ${isUpdateModalVisible?.partner_name}'s borrow`}</Text>
                                 <View style={global_styles.sizedBoxTen}></View>
                                 <View style={global_styles.sizedBoxTen}></View>
 

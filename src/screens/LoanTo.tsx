@@ -3,7 +3,7 @@ import firestore from '@react-native-firebase/firestore';
 import { Button, FAB } from '@rneui/base';
 import React, { useEffect, useState } from 'react';
 import {
-    Alert, Platform, SafeAreaView, ScrollView, StyleSheet, Text,
+    Alert, Dimensions, Platform, SafeAreaView, ScrollView, StyleSheet, Text,
     TextInput,
     ToastAndroid, TouchableOpacity,
     TouchableWithoutFeedback, View
@@ -154,7 +154,11 @@ const LoanTo = () => {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: ConstantColor.white }}>
-            {isLoading && <Loader />}
+            {isLoading ? monthlyTotals.length <= 0 && (
+                <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', height: Dimensions.get("screen").height / 1.5 }}>
+                    <Text style={[global_styles.textMedium, global_styles.textBold, global_styles.textCenter]}>No Fund Transfer Found</Text>
+                </View>
+            ) : (<Loader />)}
             <View style={global_styles.customContainer}>
 
                 <View style={global_styles.sizedBoxTen}></View>
@@ -180,7 +184,7 @@ const LoanTo = () => {
                                         <View style={{ display: user.role == 'admin' ? 'flex' : 'none', flexDirection: 'row', justifyContent: 'space-between', }}>
                                             <Button
                                                 onPress={() => setIsUpdateModalVisible(elem)}
-                                                buttonStyle={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey', padding: 1, marginRight:2 }}
+                                                buttonStyle={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey', padding: 1, marginRight: 2 }}
                                             >
                                                 <Icon type="material" name="edit" size={20} style={{ color: 'gray' }} />
                                             </Button>
@@ -217,7 +221,7 @@ const LoanTo = () => {
                                             </View>
                                             <Text style={{ color: 'black', fontWeight: '500', fontSize: 13 }}>Ref Msg: {elem?.reference || 'No Message'}</Text>
                                             {elem.entryBy && <Text style={[global_styles.textBlack, global_styles.textBold,]}
-                                            >Entry By: {elem.entryBy || 'Clerk not found'}</Text>
+                                            >Insert By: {elem.entryBy || 'Clerk not found'}</Text>
                                             }
                                         </View>
 

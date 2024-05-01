@@ -7,7 +7,6 @@ import global_styles from '../utils/global_styles'
 import { ConstantColor } from '../utils/constant_color';
 import { UserInterface } from '../interfaces/user_interface';
 import KeyValueListViewer from './KeyValueListViewer';
-import db from '../constants/database';
 import monthNameGenerator from '../helper-function/monthNameGenerator';
 import firestore from '@react-native-firebase/firestore';
 import Loader from '../utils/Loder';
@@ -31,14 +30,17 @@ interface MonthlyTotal {
 }
 
 const PartnersHome = ({ user }: { user: UserInterface }) => {
-    const [transactions, setTransactions] = useState({ invest: 0, income: 0, expense: 0, loan_to: 0, borrow: 0, loss: 0 })
+    // const [transactions, setTransactions] = useState({ invest: 0, income: 0, expense: 0, loan_to: 0, borrow: 0, loss: 0 })
     const [isLoading, setIsLoading] = useState(false)
     const [monthlyTotals, setMonthlyTotals] = useState<MonthlyTotal[]>([]);
     const [activeMonth, setActiveMonth] = useState(0);
     const flatListRef = useRef<FlatList>(null);
     const [parnerProfit, setPartnerProfit] = useState<number | undefined>(undefined);
     const [parnerShare, setPartnerShare] = useState<number | undefined>(undefined);
+    const [parnerNoShareMsg, setPartnerNoShareMsg] = useState('Tab to see your share');
     const [incomeRate, setIncomeRate] = useState<number | undefined>(undefined);
+    const [shareTimeoutId, setShareTimeoutId] = useState<NodeJS.Timeout | null>(null);
+    const [profitTimeoutId, setProfitTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
 
     // useEffect(()=>{
@@ -50,7 +52,6 @@ const PartnersHome = ({ user }: { user: UserInterface }) => {
 
     useEffect(() => {
         // createLastTwelveMonth();
-        console.log("is run main useEffect on change another")
         const currentDate = new Date();
         const twelveMonthsAgo = new Date();
         twelveMonthsAgo.setMonth(currentDate.getMonth() - 12);
@@ -60,7 +61,6 @@ const PartnersHome = ({ user }: { user: UserInterface }) => {
             const updatedMonthlyTotals: MonthlyTotal[] = [];
             snapshot.forEach((doc: any) => {
                 const transactionData = doc.data();
-                // console.log("load data :", doc.data());
                 if (!transactionData) return;
 
                 const transactionDate = transactionData.createdAt.toDate();
@@ -220,11 +220,20 @@ const PartnersHome = ({ user }: { user: UserInterface }) => {
         // let totalInvest = await totallInvest();
         // let partnerInvest = await userInvest(user.id);
         // let partnerShar = (partnerInvest / totalInvest) * 100;
-        let revenueBalance = monthlyTotals[activeMonth]?.data?.income - (monthlyTotals[activeMonth]?.data.loss + monthlyTotals[activeMonth]?.data.expense);
 
+        if (profitTimeoutId) {
+            clearTimeout(profitTimeoutId);
+            setProfitTimeoutId(null);
+        }
+
+        let revenueBalance = monthlyTotals[activeMonth]?.data?.income - (monthlyTotals[activeMonth]?.data.loss + monthlyTotals[activeMonth]?.data.expense);
 
         if (revenueBalance) {
             setPartnerProfit(Math.floor(revenueBalance));
+            let newTimeOutId = setTimeout(() => {
+                setPartnerProfit(undefined);
+            }, 5000);
+            setProfitTimeoutId(newTimeOutId);
         } else {
             Alert.alert('Cautions!', `your income less from your expenses`)
         }
@@ -244,13 +253,29 @@ const PartnersHome = ({ user }: { user: UserInterface }) => {
     }
 
     const partnerShareFun = async () => {
+        // console.log("partner share funtion")
+        if (shareTimeoutId) {
+            clearTimeout(shareTimeoutId);
+            setShareTimeoutId(null);
+        }
+
         let totalInvest = await totallInvest();
         let partnerInvest = await userInvest(user.id);
         let partnerShar = (partnerInvest / totalInvest) * 100;
         if (partnerShar) {
             setPartnerShare(Math.floor(partnerShar));
+            setTimeout(() => {
+                setPartnerShare(undefined)
+            }, 8000);
+        } else {
+            setPartnerNoShareMsg('You have no share');
+            let newTimeOutId = setTimeout(() => {
+                setPartnerNoShareMsg('Tab to see your share');
+            }, 5000);
+            setShareTimeoutId(newTimeOutId)
         }
     }
+
 
     const prevMonth = () => {
         if (activeMonth > 0) {
@@ -275,9 +300,9 @@ const PartnersHome = ({ user }: { user: UserInterface }) => {
                     }}
                         style={{ width: '50%', backgroundColor: ConstantColor.secondary, padding: 8, borderRadius: 50 }}>
                         {parnerShare ? (
-                            <Text style={[global_styles.textCenter, global_styles.textMedium, global_styles.textBlack]}>{`Your Share: ${parnerShare} %`}</Text>
+                            <Text style={[global_styles.textCenter, global_styles.textMedium, global_styles.textWhite]}>{`Your Share: ${parnerShare} %`}</Text>
                         ) : (
-                            <Text style={[global_styles.textCenter, global_styles.textMedium, global_styles.textBlack]}>Tab to see your share</Text>
+                            <Text style={[global_styles.textCenter, global_styles.textMedium, global_styles.textWhite]}>{parnerNoShareMsg}</Text>
                         )}
                     </TouchableOpacity>
                 </View>
@@ -290,9 +315,9 @@ const PartnersHome = ({ user }: { user: UserInterface }) => {
                 }}
                     style={{ ...global_styles.headerWrapper, backgroundColor: ConstantColor.secondary, padding: 12, borderRadius: 50 }}>
                     {parnerProfit ? (
-                        <Text style={[global_styles.textCenter, global_styles.textMedium, global_styles.textBlack, global_styles.shadawText]}>{`Profit of  ${monthNameGenerator(monthlyTotals[monthlyTotals.length - 1].month)}: ${parnerProfit} ৳`}</Text>
+                        <Text style={[global_styles.textCenter, global_styles.textMedium, global_styles.textWhite, global_styles.shadawText]}>{`Profit of  ${monthNameGenerator(monthlyTotals[monthlyTotals.length - 1].month)}: ${parnerProfit} ৳`}</Text>
                     ) : (
-                        <Text style={[global_styles.textCenter, global_styles.textMedium, global_styles.textBlack, global_styles.shadawText]}>Tab to see profit</Text>
+                        <Text style={[global_styles.textCenter, global_styles.textMedium, global_styles.textWhite, global_styles.shadawText]}>Tab to see profit</Text>
                     )}
                 </TouchableOpacity>
 
@@ -303,38 +328,14 @@ const PartnersHome = ({ user }: { user: UserInterface }) => {
                 </View>
                 <View style={global_styles.sizedBoxTen}></View>
 
-                {/* <FlatList
-                    data={monthlyTotals}
-                    renderItem={({ item, index }) => {
-                        return (
-                            <Pressable key={item.month}
-                                onPress={() => {
-                                    setActiveMonth(index);
-                                }}
-                                style={{ borderWidth: .3, backgroundColor: activeMonth == index ? ConstantColor.secondary : 'transparent', height: 35 }}
-                            >
-                                <Text style={{ fontSize: 14, fontWeight: 'bold', color: activeMonth == index ? 'white' : 'black', padding: 5 }}>{monthNameGenerator(item.month)}</Text>
-                            </Pressable>
-                        )
-                    }}
-                    keyExtractor={(item, index) => index.toString()}
-                    // inverted // To display items in reverse order
-                    horizontal={true}
-                    scrollEnabled
-                    showsHorizontalScrollIndicator={true}
-                    indicatorStyle='black'
-                    alwaysBounceHorizontal
-                    ref={flatListRef}
-                    persistentScrollbar={true}
-                    onScrollToIndexFailed={onScrollToIndexFailed}
-                /> */}
+
 
                 {monthlyTotals.length > 0 && (
                     <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', }}>
-                            <Icon type='ant' name='doubleleft' size={25} color='black' style={styles.iconStyle} onPress={prevMonth} />
+                            <Icon type='ant' name='caretleft' size={25} color={ConstantColor.secondary} style={styles.iconStyle} onPress={prevMonth} />
                             <Text style={{ fontWeight: 'bold', color: 'black', paddingHorizontal: 20 }}>{monthNameGenerator(monthlyTotals[activeMonth]?.month)}</Text>
-                            <Icon type='ant' name='doubleright' size={25} color='black' style={styles.iconStyle} onPress={nextMonth} />
+                            <Icon type='ant' name='caretright' size={25} color={ConstantColor.secondary} style={styles.iconStyle} onPress={nextMonth} />
                         </View>
                     </View>
                 )}
@@ -363,7 +364,7 @@ const PartnersHome = ({ user }: { user: UserInterface }) => {
                             <KeyValueListViewer title='loss' amount={monthlyTotals[activeMonth].data.loss} />
                         </View>
                     ) : (
-                        <View  style={{flex:1, flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
+                        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                             <ActivityIndicator color={'black'} size={'large'} />
                         </View>
 
@@ -371,11 +372,14 @@ const PartnersHome = ({ user }: { user: UserInterface }) => {
                 </ScrollView>
 
                 <View style={{ width: "100%", alignItems: 'center', }}>
-                    <View style={{ backgroundColor: ConstantColor.lightGray, paddingVertical: 5, paddingHorizontal: 10, borderWidth: 2, borderRadius: 20 }}>
-                        {incomeRate && (
-                            <Text style={[global_styles.textCenter, global_styles.textMedium, global_styles.textBlack]}>{`Income Rate: ${incomeRate} %`}</Text>
-                        )}
+                    <View
+                        style={{ backgroundColor: ConstantColor.lightGray, paddingVertical: 5, paddingHorizontal: 10, borderWidth: 2, borderRadius: 20 }}
+                    >
+                        {incomeRate ? <Text style={[global_styles.textCenter, global_styles.textMedium, global_styles.textBlack]}> {`Income Rate: ${incomeRate} %`} </Text>
+                            :
+                            <Text>Income rate bellow 0 %</Text>}
                     </View>
+
                 </View>
             </>
         </View>

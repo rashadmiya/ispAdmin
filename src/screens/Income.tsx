@@ -179,7 +179,7 @@ const Income = () => {
                                         <Text style={{ color: 'black', fontWeight: '500', fontSize: 13 }}>Income Date: {incomeDate}</Text>
                                         <Text style={{ color: 'black', fontWeight: '500', fontSize: 13 }}>Ref Msg: {elem?.reference || 'No Message'}</Text>
                                         {elem.entryBy && <Text style={[global_styles.textBlack, global_styles.textBold,]}
-                                        >Entry By: {elem.entryBy || 'Clerk not found'}</Text>
+                                        >Insert By: {elem.entryBy || 'Clerk not found'}</Text>
                                         }
                                     </View>
                                 </View>
@@ -206,7 +206,7 @@ const Income = () => {
                 >
                     <View style={{ minHeight: 300, backgroundColor: ConstantColor.lightGray, borderRadius: 10, padding: 10, }}>
                         <View>
-                            <Text style={[global_styles.modalHeader,]}>Update Income Info</Text>
+                            <Text style={[global_styles.modalHeader, global_styles.textBlack]}>Update Income Info</Text>
                             <View style={global_styles.greyLine} />
                         </View>
 
@@ -214,7 +214,7 @@ const Income = () => {
                             <View style={{ ...global_styles.shadow, padding: 5 }}>
 
                                 <View style={global_styles.sizedBoxTen}></View>
-                                <Text style={[global_styles.textMedium, global_styles.shadawText]}>{`Update ${isUpdateModalVisible?.incomeFrom}'s info`}</Text>
+                                <Text style={[global_styles.textMedium, global_styles.textBlack]}>{`Update ${isUpdateModalVisible?.incomeFrom}'s info`}</Text>
                                 <View style={global_styles.sizedBoxTen}></View>
                                 <TextInput
                                     placeholderTextColor="#000"
@@ -236,6 +236,7 @@ const Income = () => {
                                     boxStyles={{ padding: 0, height: 40, margin: 0 }}
                                     inputStyles={{ height: 30, color: 'black' }}
                                     dropdownTextStyles={{ color: 'black' }}
+                                    disabledTextStyles={{color:'#000'}}
                                 />
                                 <Text></Text>
 

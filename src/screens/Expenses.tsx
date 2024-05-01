@@ -188,7 +188,7 @@ const Expenses = () => {
                                         <Text style={[global_styles.textBlack,]}>Expense Date: {expenseDate}</Text>
                                         <Text style={[{ color: 'black', fontWeight:'500', fontSize:13 }]}>Ref Msg: {elem?.reference || 'No Message'}</Text>
                                         {elem.entryBy && <Text style={[global_styles.textBlack, global_styles.textBold,]}
-                                        >Entry By: {elem.entryBy || 'Clerk not found'}</Text>
+                                        >Insert By: {elem.entryBy || 'Clerk not found'}</Text>
                                         }
                                     </View>
                                 </View>
@@ -215,7 +215,7 @@ const Expenses = () => {
                 >
                     <View style={{ minHeight: 250, backgroundColor: ConstantColor.lightGray, borderRadius: 10, padding: 10, }}>
                         <View>
-                            <Text style={[global_styles.modalHeader,]}>Update User</Text>
+                            <Text style={[global_styles.modalHeader,global_styles.textBlack]}>Update User</Text>
                             <View style={global_styles.greyLine} />
                         </View>
 
@@ -223,7 +223,7 @@ const Expenses = () => {
                             <View style={{ ...global_styles.shadow, padding: 5 }}>
 
                                 <View style={global_styles.sizedBoxTen}></View>
-                                <Text style={[global_styles.textMedium, global_styles.shadawText]}>{`Update ${isUpdateModalVisible?.expenseTo}'s expense`}</Text>
+                                <Text style={[global_styles.textMedium, global_styles.textBlack]}>{`Update ${isUpdateModalVisible?.expenseTo}'s expense`}</Text>
                                 <View style={global_styles.sizedBoxTen}></View>
 
                                 <TextInput
@@ -246,6 +246,7 @@ const Expenses = () => {
                                     boxStyles={{ padding: 0, height: 40, margin: 0 }}
                                     inputStyles={{ height: 30, color: 'black' }}
                                     dropdownTextStyles={{ color: 'black' }}
+                                    disabledTextStyles={{color:'#000'}}
                                 />
                                 <Text></Text>
 

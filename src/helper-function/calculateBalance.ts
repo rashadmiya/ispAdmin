@@ -122,9 +122,7 @@ export const totallInvest = async () => {
 
     });
 
-    if (investAmount> 0) {
-        console.log("totall invest:", investAmount);
-        
+    if (investAmount> 0) { 
         return investAmount;
     }
 

@@ -146,7 +146,7 @@ const FundTransfers = () => {
                                         // style={{ backgroundColor: '#fff', opacity: 0.7, borderRadius: 100, borderWidth: 2, borderColor: 'grey' }}
                                         >
                                             <Text style={{ color: 'black', fontWeight: '800', fontSize: 14, paddingHorizontal: 5 }}>
-                                                Manage User
+                                                Manage Fund
                                             </Text>
                                         </Button>
                                     </View>
@@ -179,7 +179,7 @@ const FundTransfers = () => {
                 >
                     <View style={{ minHeight: 200, backgroundColor: ConstantColor.lightGray, borderRadius: 10, padding: 10, }}>
                         <View>
-                            <Text style={[global_styles.modalHeader,]}>Update User</Text>
+                            <Text style={[global_styles.modalHeader,]}>Update Fund</Text>
                             <View style={global_styles.greyLine} />
                         </View>
 
@@ -187,7 +187,7 @@ const FundTransfers = () => {
                             <View style={{ ...global_styles.shadow, padding: 5 }}>
 
                                 <View style={global_styles.sizedBoxTen}></View>
-                                <Text style={[global_styles.textMedium, global_styles.shadawText]}>{`Update ${isModalVisible?.fullName}'s role`}</Text>
+                                <Text style={[global_styles.textMedium, global_styles.shadawText]}>{`Update ${isModalVisible?.fullName}'s fund`}</Text>
                                 <View style={global_styles.sizedBoxTen}></View>
 
                                 <SelectList
@@ -199,6 +199,7 @@ const FundTransfers = () => {
                                     placeholder='Loss Sector'
                                     boxStyles={{ padding: 0, height: 40, margin: 0, }}
                                     inputStyles={{ height: 30, color: 'black' }}
+                                    disabledTextStyles={{color:'#000'}}
                                 />
                                 <Text></Text>
 

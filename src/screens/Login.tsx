@@ -1,23 +1,19 @@
+import auth from '@react-native-firebase/auth';
 import React, { useState } from 'react';
 import {
-  Image,
+  ActivityIndicator,
+  Alert,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  StatusBar,
-  View,
-  StyleSheet,
-  SafeAreaView,
-  ImageBackground,
-  ActivityIndicator,
-  Alert
+  View
 } from 'react-native';
 import { AuthContext } from '../utils/auth_context';
-import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
-import Loader from '../utils/Loder';
 import { ConstantColor } from '../utils/constant_color';
-import { LOGIN, REGISTER } from '../utils/constant_route';
+import { REGISTER } from '../utils/constant_route';
 
 export default function Register({ navigation }: { navigation: any }) {
   const [email, setEmail] = useState('');
@@ -26,19 +22,24 @@ export default function Register({ navigation }: { navigation: any }) {
 
   const { signIn } = React.useContext(AuthContext);
   const loginUser = () => {
-    setLoading(true);
-    auth()
-      .signInWithEmailAndPassword(email, password)
-      .then((response) => {
-        signIn();
-        setLoading(false);
+    try {
+      setLoading(true);
+      auth().signInWithEmailAndPassword(email, password)
+        .then((response) => {
+          signIn();
+          setLoading(false);
 
-      })
-      .catch((error) => {
-        setLoading(false);
-        Alert.alert(error.message);
-        return;
-      });
+        })
+        .catch((error) => {
+          setLoading(false);
+          Alert.alert(error.message);
+          return;
+        });
+    } catch (error:any) {
+      setLoading(false);
+      Alert.alert(error.message);
+      return;
+    }
   };
 
   return (

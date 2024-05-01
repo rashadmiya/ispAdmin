@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { View, Text, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
@@ -18,7 +18,12 @@ const DrawerNavigator = () => {
 
   const authContext = React.useMemo(() => ({
     signIn: async () => {
-      const subscriber = await auth().onAuthStateChanged(onAuthStateChanged);
+      try {
+        const subscriber = await auth().onAuthStateChanged(onAuthStateChanged);
+      } catch (error:any) {
+        Alert.alert(error);
+        return;
+      }
     },
     signOut: async () => {
       setInitializing(true)

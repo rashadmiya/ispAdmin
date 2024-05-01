@@ -4,13 +4,13 @@ import global_styles from '../utils/global_styles'
 import { ConstantColor } from '../utils/constant_color'
 import HomeAccordion from './common/HomeAccordion'
 import { dailyAccountsOptions, fundManagerAccountsOptions } from '../constants/menuItems';
-import { FAB } from '@rneui/base'
 import FloatingAnimatedActionBtn from './FloatingAnimatedActionBtn'
 import { todaysBalance } from '../helper-function/calculateBalance'
 
 const OwnerHome = ({ user }: { user: any }) => {
     const [dailyAccountsOpts, setDailyAccountsOpts] = useState(dailyAccountsOptions);
     const [balanceToday, setBalanceToday] = useState<number | undefined>(undefined);
+    const [balanceTimeoutId, setBalanceTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
         let dailyAccountOptns: any = [];
@@ -22,9 +22,20 @@ const OwnerHome = ({ user }: { user: any }) => {
     }, []);
 
     const showBalanceFun = async () => {
+
+        if (balanceTimeoutId) {
+            clearTimeout(balanceTimeoutId);
+            setBalanceTimeoutId(null); // Reset the state
+        }
         let balance = await todaysBalance();
         if (balance) {
             setBalanceToday(balance);
+
+            const newTimeoutId = setTimeout(() => {
+                setBalanceToday(undefined);
+                setBalanceTimeoutId(null); // Reset the state
+            }, 5000);
+            setBalanceTimeoutId(newTimeoutId); // Update the state with new timeout ID
         }
     }
 
@@ -40,9 +51,9 @@ const OwnerHome = ({ user }: { user: any }) => {
             <TouchableOpacity onPress={showBalanceFun}
                 style={{ ...global_styles.headerWrapper, backgroundColor: ConstantColor.secondary, padding: 12, borderRadius: 50 }}>
                 {balanceToday ? (
-                    <Text style={[global_styles.textCenter, global_styles.textMedium, global_styles.textBlack, global_styles.shadawText]}>{`Today's Balance: ${balanceToday}-৳`}</Text>
+                    <Text style={[{ textAlign: 'center', fontSize: 16, color: '#fff', fontWeight: 'bold' }, global_styles.shadawText]}>{`Today's Balance: ${balanceToday} ৳`}</Text>
                 ) : (
-                    <Text style={[global_styles.textCenter, global_styles.textMedium, global_styles.textBlack, global_styles.shadawText]}>Tab to see balance today</Text>
+                    <Text style={[{ textAlign: 'center', fontSize: 16, color: '#fff', fontWeight: 'bold' }, global_styles.shadawText]}>Tab to see balance today</Text>
                 )}
 
             </TouchableOpacity>

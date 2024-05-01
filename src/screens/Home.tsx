@@ -87,11 +87,13 @@ const Home = ({ navigation }: { navigation: any }) => {
         if (tempLossConstant) {
             dispatch(addLossConstant(tempLossConstant));
         }
-        console.log('called loadLossConstant firebase function', user)
+        // console.log('called loadLossConstant firebase function', user)
     }
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: ConstantColor.white }}>
+            {/* {user && user.role == 'admin' || 'fund manager' && activeScreen == 'home' && (<OwnerHome user={user} />)}
+            {user && user.role == 'admin' || user && user.role =='fund manager' && activeScreen == 'accounts' && (<PartnersHome user={user} />)} */}
             {user && user.role == 'admin' && activeScreen == 'home' && (<OwnerHome user={user} />)}
             {user && user.role == 'admin' && activeScreen == 'accounts' && (<PartnersHome user={user} />)}
             {user && user.role == 'fund manager' && activeScreen == 'home' && (<OwnerHome user={user} />)}
