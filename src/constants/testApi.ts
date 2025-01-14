@@ -1,0 +1,1 @@
+export const baseURL = 'https://us-central1-trato-1428f.cloudfunctions.net/api';
